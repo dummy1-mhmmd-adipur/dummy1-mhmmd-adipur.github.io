@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NEW BANGGA Links</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <script>
+        // Store URLs
+        const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.bangga.mobilebanking&hl=id';
+        const appStoreUrl = 'https://apps.apple.com/id/app/new-bangga/id1635950204';
+
+        // Deteksi platform
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+        function tryOpenApp() {
+
+            // redirect ke store
+            if (isAndroid) {
+                window.location.href = playStoreUrl;
+            } else if (isIOS) {
+                window.location.href = appStoreUrl;
+            } else {
+                // Desktop atau platform lain
+                window.location.href = playStoreUrl;
+            }
+        }
+
+        // Jalankan setelah page load
+        window.onload = tryOpenApp;
+    </script>
+</body>
+</html>
