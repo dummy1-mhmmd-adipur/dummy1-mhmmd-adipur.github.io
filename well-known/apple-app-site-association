@@ -7,10 +7,9 @@
         "paths": ["*"]
       },
       {
-        "appID": ["SP47E5VDD6.com.bangga.newmobilebanking"],
+        "appIDs": ["SP47E5VDD6.com.bangga.newmobilebanking"],
         "paths": ["*"]
       }
     ]
   }
 }
-
