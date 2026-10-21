@@ -1,0 +1,3075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCG Card Shop Simulator Save Editor - Free Online Save Mod</title>
+
+<!-- Primary Meta Tags -->
+<meta name="title" content="TCG Card Shop Simulator Save Editor - Free Online Save Mod">
+<meta name="description" content="Free online save editor for TCG Card Shop Simulator. Instantly edit your money, shop level, worker stats, card inventory, deco items, and grading batches.">
+<meta name="keywords" content="TCG Card Shop Simulator, save editor, money cheat, mod, card inventory editor, shop level, unlimited coins, trainer, unlock all cards, grading cheat, TCG Shop save tool, Nintendo Switch save, save modifier">
+<meta name="author" content="Mirfy<3">
+<meta name="robots" content="index, follow">
+<meta name="revisit-after" content="7 days">
+<meta name="language" content="English">
+<meta name="theme-color" content="#09090b">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="TCG Card Shop Simulator Save Editor - Mod Your Game">
+<meta property="og:description" content="Free online save editor for TCG Card Shop Simulator. Instantly edit your money, shop level, worker stats, card inventory, and grading batches.">
+<meta property="og:site_name" content="TCG Card Shop Save Editor">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="TCG Card Shop Simulator Save Editor">
+<meta property="twitter:description" content="Free online save editor for TCG Card Shop Simulator. Edit money, levels, inventory, and unlock all cards instantly directly from your browser.">
+
+<!-- Canonical URL -->
+<link rel="canonical" href="https://mirfymirful.github.io/tcg-cardshop-save-editor/">
+
+<!-- Google Site Verification -->
+<meta name="google-site-verification" content="zONF3Uon6e8AsmBSlcU0trFjH1Lu0-s5yuDpN5oeTk4" />
+
+<!-- Modern Premium Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* Ultra-modern dark theme (Zinc/Violet) */
+  --bg: #09090b;          /* Zinc 950 */
+  --panel: #18181b;       /* Zinc 900 */
+  --panel-hover: #27272a; /* Zinc 800 */
+  --input-bg: #000000;    /* Pure black inputs */
+  --accent: #6366f1;      /* Indigo 500 */
+  --accent-hover: #4f46e5;/* Indigo 600 */
+  --accent-alpha: rgba(99, 102, 241, 0.2);
+  --cyan: #06b6d4;        
+  --green: #10b981;       
+  --gold: #f59e0b;        
+  --text: #fafafa;        /* Zinc 50 */
+  --muted: #a1a1aa;       /* Zinc 400 */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.15);
+  --red: #ef4444;         
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg);
+  /* Ambient glowing orbs in background */
+  background-image: 
+    radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(6, 182, 212, 0.12), transparent 40%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================== Header ================== */
+#header {
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+#header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(to right, #fff, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  flex: 1;
+  letter-spacing: -0.02em;
+}
+
+#unsaved {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--gold);
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  display: none;
+  animation: pulse 2s infinite;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); } }
+
+/* ================== Buttons ================== */
+.btn, .hbtn {
+  font-family: var(--font-ui);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 99px; /* Pill shaped buttons */
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  outline: none;
+}
+.btn:hover, .hbtn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-highlight); transform: translateY(-1px); }
+.btn:active, .hbtn:active { transform: translateY(0); }
+
+/* Primary Button Gradients */
+.btn-p, .hbtn.cyan {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 12px var(--accent-alpha), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-p:hover, .hbtn.cyan:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); box-shadow: 0 6px 16px var(--accent-alpha), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-p:disabled, .hbtn.cyan:disabled { opacity: 0.5; pointer-events: none; }
+
+.btn-g { background: linear-gradient(135deg, var(--green), #059669); border: none; color: #fff; }
+.btn-g:hover { background: linear-gradient(135deg, #059669, #047857); }
+.btn-gold { background: linear-gradient(135deg, var(--gold), #d97706); border: none; color: #fff; }
+.btn-gold:hover { background: linear-gradient(135deg, #d97706, #b45309); }
+.btn-r { background: linear-gradient(135deg, var(--red), #dc2626); border: none; color: #fff; }
+.btn-r:hover { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+/* ================== Tabs Widget ================== */
+.tabs-wrapper {
+  position: sticky;
+  top: 85px;
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+  pointer-events: none; /* Let clicks pass through background */
+}
+
+#tabs {
+  pointer-events: auto;
+  display: inline-flex;
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 6px;
+  gap: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  overflow-x: auto;
+  max-width: 90vw;
+}
+#tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+.tab.active {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.15);
+}
+
+/* ================== Layout & Cards ================== */
+#content { padding: 10px 32px 64px; max-width: 1400px; margin: 0 auto; }
+#global-msg { margin-top: 8px; }
+.tab-pane { display: none; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(10px); }
+.tab-pane.active { display: block; }
+
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+.card {
+  background: rgba(24, 24, 27, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-title::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: var(--cyan);
+  border-radius: 4px;
+}
+
+/* ================== Forms & Inputs ================== */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+input[type=text], input[type=number], select {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  width: 100%;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+input:focus, select:focus {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.03);
+  box-shadow: 0 0 0 3px var(--accent-alpha), inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Custom Checkboxes */
+.form-group.chk { flex-direction: row; align-items: center; gap: 12px; margin-top: auto; padding-bottom: 12px; }
+.form-group.chk label { margin: 0; font-size: 14px; color: var(--text); cursor: pointer; text-transform: none; letter-spacing: 0; }
+
+input[type=checkbox] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--muted);
+  background: var(--input-bg);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+input[type=checkbox]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--accent-alpha);
+}
+input[type=checkbox]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 28%;
+  height: 55%;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-sizing: border-box;
+}
+
+/* ================== Tables ================== */
+.tbl-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+  padding: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255, 255, 255, 0.03); }
+
+td input[type=number], td input[type=text] {
+  padding: 8px 12px;
+  font-size: 13px;
+  width: 90px;
+  background: rgba(0,0,0,0.4);
+}
+
+/* ================== Utilities & Badges ================== */
+.pagination { display: flex; align-items: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+.pagination span { color: var(--muted); font-size: 13px; font-weight: 500; }
+
+.exp-selector { display: flex; flex-wrap: wrap; gap: 12px; }
+.exp-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 16px 8px 8px;
+  cursor: pointer; transition: all 0.2s;
+  color: var(--muted); font-weight: 600; font-size: 13px;
+}
+.exp-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.exp-btn.active { background: var(--accent-alpha); border-color: var(--accent); color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.exp-btn img { width: 36px; height: 50px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+.rarity-base { color: var(--muted); }
+.rarity-first { color: #fcd34d; font-weight: 600; }
+.rarity-silver { color: #e2e8f0; font-weight: 600; }
+.rarity-gold { color: #fbbf24; font-weight: 600; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+.rarity-ex { color: #c084fc; font-weight: 600; text-shadow: 0 0 10px rgba(192, 132, 252, 0.3); }
+.rarity-fullart { color: #f87171; font-weight: 600; text-shadow: 0 0 10px rgba(248, 113, 113, 0.3); }
+
+.foil-badge {
+  background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6, #818cf8);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(255,255,255,0.05); /* Fallback */
+  border: 1px solid rgba(192, 132, 252, 0.3);
+}
+@keyframes shimmer { 0% { background-position: 0%; } 100% { background-position: 300%; } }
+
+/* Filter & Bulk Bars */
+.filter-bar, .bulk-bar { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; align-items: center; }
+.bulk-bar { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
+.filter-bar input, .filter-bar select, .bulk-bar input { padding: 8px 14px; font-size: 13px; }
+.bulk-label { color: var(--text); font-size: 14px; font-weight: 700; margin-right: 8px; }
+
+.stat-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 99px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+/* ================== Dynamic Elements Overrides (Workers, Grading, Ach) ================== */
+.worker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+.worker-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: all 0.3s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.worker-card.hired {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(0,0,0,0) 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.worker-card h3 { font-family: var(--font-ui) !important; font-size: 16px !important; margin-bottom: 20px !important; }
+.wrow { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; margin-bottom: 12px !important; }
+.wrow label { font-size: 13px !important; color: var(--muted) !important; font-weight: 600 !important; margin: 0 !important; }
+.wrow input[type=number] { width: 100px !important; text-align: right; flex: 0 0 auto; }
+.wrow input[type=checkbox] { flex: 0 0 auto; width: 16px; height: 16px; margin: 0; cursor: pointer; }
+
+.pack-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  background: rgba(0,0,0,0.2); padding: 16px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); margin-top: 12px; margin-bottom: 20px;
+}
+.pack-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+
+.grading-batch {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--accent);
+}
+.grading-cards { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.g-chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.grading-actions { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; }
+
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 20px; }
+.ach-item {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.ach-item:hover { border-color: var(--border-highlight); background: rgba(255,255,255,0.05); }
+.ach-item.unlocked {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--text);
+}
+
+/* ================== JSON Area ================== */
+#raw-json-area {
+  width: 100%; height: 65vh;
+  background: #0d0d0d;
+  border: 1px solid var(--border);
+  color: #a5d6ff;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.6;
+  border-radius: var(--radius-md);
+  padding: 24px; resize: vertical; outline: none;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+}
+#raw-json-area:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-alpha), inset 0 2px 10px rgba(0,0,0,0.5); }
+
+/* ================== Modals & Overlays ================== */
+#drop-overlay {
+  position: fixed; inset: 0; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(8px);
+  z-index: 999; display: none; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 800; color: var(--accent);
+  border: 4px dashed var(--accent); margin: 24px; border-radius: 32px;
+}
+#drop-overlay.show { display: flex; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+  z-index: 200; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;
+}
+.modal-overlay.show { display: flex; opacity: 1; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 40px; max-width: 480px; width: 90%; text-align: center;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.show .modal { transform: scale(1); }
+.modal h3 { font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+.modal p { font-size: 14px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* Messages */
+.no-data {
+  color: var(--muted); text-align: center; padding: 60px 20px;
+  font-size: 15px; font-weight: 600; background: rgba(0,0,0,0.2);
+  border: 1px dashed var(--border); border-radius: var(--radius-md);
+}
+.err-msg, .ok-msg {
+  border-radius: var(--radius-sm); padding: 14px 20px;
+  font-size: 14px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center;
+}
+.err-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+.ok-msg { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; border: 3px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+.svc-0 { color: var(--muted); font-weight: 600; }
+.svc-1 { color: var(--gold); font-weight: 700; }
+.svc-2 { color: var(--cyan); font-weight: 700; }
+
+/* Stats Viewer */
+.stats-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 6px 16px;
+  border-radius: 99px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+.stats-badge:hover { background: rgba(16, 185, 129, 0.15); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+.stats-badge .s-num { color: #10b981; font-weight: 800; font-family: var(--font-mono); font-size: 14px; }
+.stats-badge .s-txt { color: var(--text); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ================== Responsive ================== */
+@media (max-width: 900px) {
+  #header { padding: 12px 16px; gap: 10px; flex-wrap: wrap; }
+  #header h1 { font-size: 16px; flex: 1 1 100%; }
+  .tabs-wrapper { top: 0; padding: 10px 0; }
+  #tabs { max-width: 96vw; }
+  #content { padding: 10px 16px 48px; }
+  .card { padding: 18px; }
+  .form-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  th, td { padding: 12px 10px; font-size: 13px; }
+}
+
+@media (max-width: 600px) {
+  #header { padding: 10px 12px; gap: 8px; }
+  #header h1 { font-size: 15px; }
+  /* Make header action buttons share the row evenly */
+  #header .btn, #header .hbtn { flex: 1 1 auto; padding: 8px 10px; font-size: 13px; text-align: center; }
+  .stats-badge { flex: 1 1 100%; justify-content: center; order: 5; }
+  #unsaved { flex: 1 1 100%; text-align: center; }
+
+  #content { padding: 8px 10px 40px; }
+  .card { padding: 14px; border-radius: var(--radius-md); }
+
+  /* Single column forms on phones */
+  .form-grid { grid-template-columns: 1fr; gap: 12px; }
+
+  /* Tables scroll horizontally instead of squishing */
+  th, td { padding: 10px 8px; font-size: 12px; white-space: nowrap; }
+  th:first-child, td:first-child { position: sticky; left: 0; background: var(--panel); z-index: 1; }
+
+  /* Tabs: keep tappable, allow horizontal scroll */
+  .tab { padding: 8px 12px; font-size: 13px; }
+
+  /* Grids used in panels (stats, achievements, deco, furniture) adapt */
+  .ach-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .pack-grid { grid-template-columns: repeat(2, 1fr); }
+  #stats-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
+  #settings-grid { grid-template-columns: 1fr !important; }
+  #fn-list > div[style*="grid"] { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; }
+
+  /* Worker cards stack */
+  #w-grid { grid-template-columns: 1fr !important; }
+
+  /* Modal / detail overlay fits screen */
+  #fn-detail-overlay > div, .modal { max-width: 94vw !important; padding: 18px !important; }
+
+  /* JSON editor textarea shorter on phone */
+  #raw-json-area { min-height: 320px; font-size: 12px; }
+
+  /* Pagination wraps neatly */
+  .pagination { gap: 8px; justify-content: center; }
+
+  /* Welcome panel cards stack */
+  #welcome-panel > div { flex-direction: column !important; }
+}
+</style>
+
+<!-- pako: gzip/deflate in the browser (for reading/writing Switch GameData_* files) -->
+<script src="pako.min.js"></script>
+<script>
+  // Fallback to CDN if the local pako.min.js is missing
+  if (typeof pako === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"><\/script>');
+  }
+</script>
+</head>
+<body>
+
+<div id="drop-overlay">Drop save file here</div>
+
+<div id="header">
+  <h1>TCG Card Shop Simulator Save Editor</h1>
+  <div class="stats-badge" title="Total saves successfully modified by the community">
+    <span class="s-num" id="global-saves-count">Loading...</span>
+    <span class="s-txt">Players helped <3</span>
+  </div>
+  <input type="file" id="file-input" accept="*/*,.json" style="display:none">
+  <input type="file" id="images-input" accept=".json" style="display:none">
+  <button class="hbtn" onclick="document.getElementById('file-input').click()">Load Save</button>
+  <button class="btn btn-gray" onclick="document.getElementById('images-input').click()" title="Load card_images.json">Load Images</button>
+  <button class="hbtn cyan" onclick="trySave()" id="save-btn" disabled>Save Changes</button>
+  <span id="unsaved">● Unsaved</span>
+</div>
+
+<!-- Wrapped tabs in a container for the floating dock look -->
+<div class="tabs-wrapper">
+  <div id="tabs">
+    <div class="tab active" data-tab="0">Player</div>
+    <div class="tab" data-tab="1">Cards &amp; Collection</div>
+    <div class="tab" data-tab="2">Items</div>
+    <div class="tab" data-tab="3">Workers</div>
+    <div class="tab" data-tab="4">Grading</div>
+    <div class="tab" data-tab="5">Achievements &amp; Unlocks</div>
+    <div class="tab" data-tab="6">Reviews</div>
+    <div class="tab" data-tab="7">Shop &amp; Stats</div>
+    <div class="tab" data-tab="8">Furniture</div>
+    <div class="tab" data-tab="9">Raw JSON</div>
+  </div>
+</div>
+
+<div id="content">
+  <div id="global-msg"></div>
+
+  <div id="welcome-panel" class="card" style="text-align: center; margin-top: 20px;">
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 12px; color: var(--text);">Welcome to the Save Editor!</h2>
+    <p style="color: var(--muted); margin-bottom: 24px; font-size: 15px;">To get started, click <strong>Load Save</strong> at the top or drag and drop your save file anywhere on the screen. Both PC (<code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">.json</code>) and Nintendo Switch (<code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">GameData_1</code>) save files are supported.</p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+
+      <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--border-highlight); padding: 20px; border-radius: var(--radius-md); text-align: left; max-width: 600px;">
+        <div style="font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--cyan);">🖥️</span> PC — Where is my save file located?
+        </div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Copy and paste this exact path into your Windows File Explorer address bar:</p>
+        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--cyan); background: #000; padding: 12px 16px; border-radius: var(--radius-sm); user-select: all; cursor: text; border: 1px solid var(--border);">%USERPROFILE%\AppData\LocalLow\OPNeonGames\Card Shop Simulator\</div>
+        <div style="font-size: 13px; color: var(--muted); margin-top: 12px;">Look for the file named <code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">savedGames_Release0.json</code></div>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--border-highlight); padding: 20px; border-radius: var(--radius-md); text-align: left; max-width: 600px;">
+        <div style="font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--cyan);">🎮</span> Nintendo Switch — Where is my save file located?
+        </div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Use a save manager such as <strong>JKSV</strong> to back up your save from the console, then load the exported file here:</p>
+        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--cyan); background: #000; padding: 12px 16px; border-radius: var(--radius-sm); user-select: all; cursor: text; border: 1px solid var(--border);">JKSV/Card Shop Simulator/&lt;backup folder&gt;/GameData_1</div>
+        <div style="font-size: 13px; color: var(--muted); margin-top: 12px;">Load the file named <code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">GameData_1</code> (and/or <code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">GameData_0</code>). When you export, the editor rebuilds a valid <code style="color: var(--gold); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;">GameData_1</code> file — ready to restore with JKSV.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB 0: PLAYER -->
+  <div class="tab-pane active" id="pane-0">
+    <div class="no-data" id="p-nodata">Load a save file to begin editing.</div>
+    <div id="p-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Player Info</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Player Name</label><input type="text" id="p_name"></div>
+          <div class="form-group"><label>Coins</label><input type="number" id="p_coins" step="0.01"></div>
+          <div class="form-group"><label>Shop Level</label><input type="number" id="p_shopLevel" min="0"></div>
+          <div class="form-group"><label>Shop EXP Points</label><input type="number" id="p_shopExp" min="0"></div>
+          <div class="form-group"><label>Fame Points</label><input type="number" id="p_fame" min="0"></div>
+          <div class="form-group"><label>Total Fame Add</label><input type="number" id="p_totalFame" min="0"></div>
+          <div class="form-group"><label>Current Day</label><input type="number" id="p_day" min="0"></div>
+          <div class="form-group"><label>Review Avg Total (all-time)</label><input type="number" id="p_reviewAvg" min="0" max="5" step="0.00000001" title="The game's all-time average over all reviews (m_CustomerReviewScoreAverage). Editable."></div>
+          <div class="form-group"><label>Review Count</label><input type="number" id="p_reviewCount" min="0"></div>
+          <div class="form-group"><label>Unlock Room Count</label><input type="number" id="p_unlockRoom" min="0"></div>
+          <div class="form-group"><label>Unlock Warehouse Count</label><input type="number" id="p_unlockWH" min="0"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Flags &amp; Tutorial</div>
+        <div class="form-grid">
+          <div class="form-group chk"><input type="checkbox" id="p_shopOpen"><label for="p_shopOpen">Shop Is Open</label></div>
+          <div class="form-group chk"><input type="checkbox" id="p_tutDone"><label for="p_tutDone">Tutorial Complete</label></div>
+          <div class="form-group"><label>Tutorial Index (0-11)</label><input type="number" id="p_tutIndex" min="0" max="11"></div>
+          <div class="form-group chk"><input type="checkbox" id="p_warehouseUnlocked"><label for="p_warehouseUnlocked">Warehouse Room Unlocked</label></div>
+          <div class="form-group chk"><input type="checkbox" id="p_scannerUnlocked"><label for="p_scannerUnlocked">Scanner Restock Unlocked</label></div>
+        </div>
+        <div style="margin-top:24px">
+          <button class="btn btn-g" onclick="completeTutorial()">Mark Tutorial Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1: CARDS -->
+  <div class="tab-pane" id="pane-1">
+    <div class="no-data" id="c-nodata">Load a save file to begin editing.</div>
+    <div id="c-form" style="display:none">
+      <div class="card">
+        <div class="exp-selector" id="exp-selector"></div>
+      </div>
+      <div class="card">
+        <div class="stat-bar" id="c-stats"></div>
+        <div class="filter-bar">
+          <input type="text" id="c-search" placeholder="Search monster name..." style="width: 240px;">
+          <select id="c-rarity">
+            <option value="">All Rarities</option>
+            <option value="0">Base</option>
+            <option value="1">1st Edition</option>
+            <option value="2">Silver</option>
+            <option value="3">Gold</option>
+            <option value="4">EX</option>
+            <option value="5">Full Art</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer;font-weight:600;"><input type="checkbox" id="c-foil"> Foil Only</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer;font-weight:600;"><input type="checkbox" id="c-owned"> Owned Only</label>
+        </div>
+        <div class="bulk-bar">
+          <span class="bulk-label">Bulk Actions</span>
+          <button class="btn btn-g btn-sm" onclick="bulkUnlockAll()">Unlock All</button>
+          
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+          
+          <span style="color:var(--muted);font-size:13px;font-weight:600">Copies:</span>
+          <input type="number" id="bulk-copies" value="99" min="1" style="width: 80px;">
+          <button class="btn btn-p btn-sm" onclick="bulkSetCopies()">Set All</button>
+          <button class="btn btn-gray btn-sm" onclick="bulkClearCopies()">Clear All</button>
+          
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+          
+          <span style="color:var(--muted);font-size:13px;font-weight:600">Sell:</span>
+          <input type="number" id="bulk-price" value="0" step="0.01" style="width: 80px;">
+          <button class="btn btn-c btn-sm" onclick="bulkSetPrice()">Set</button>
+          
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+          
+          <span style="color:var(--muted);font-size:13px;font-weight:600">Market:</span>
+          <input type="number" id="bulk-market" value="0" step="0.01" style="width: 80px;">
+          <button class="btn btn-gold btn-sm" onclick="bulkSetMarket()">Set</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Monster</th><th>Border</th><th>Foil</th><th>Copies</th><th>Collected</th><th>Sell Price</th><th>Market Price</th></tr></thead>
+            <tbody id="c-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="btn btn-gray btn-sm" onclick="cardPrev()">Previous</button>
+          <span id="c-page-info"></span>
+          <button class="btn btn-gray btn-sm" onclick="cardNext()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ITEMS -->
+  <div class="tab-pane" id="pane-2">
+    <div class="no-data" id="i-nodata">Load a save file to begin editing.</div>
+    <div id="i-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Items Inventory (500 types)</div>
+        <div class="filter-bar">
+          <input type="text" id="i-search" placeholder="Filter by item index..." style="width: 240px;">
+        </div>
+        <div class="bulk-bar">
+          <span class="bulk-label">Bulk Actions</span>
+          <button class="btn btn-g btn-sm" onclick="bulkUnlockLicenses()">Unlock All Licenses</button>
+          
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+          
+          <span style="color:var(--muted);font-size:13px;font-weight:600">Stock Level:</span>
+          <input type="number" id="bulk-stock" value="99" min="0" style="width: 80px;">
+          <button class="btn btn-p btn-sm" onclick="bulkSetStock()">Apply to All</button>
+          
+          <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+          
+          <button class="btn btn-r btn-sm" onclick="bulkClearItemPrices()">Clear All Prices</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Item #</th><th>In Stock</th><th>Sell Price</th><th>Cost Price (Ref)</th><th>Market Price</th><th>License</th></tr></thead>
+            <tbody id="i-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button class="btn btn-gray btn-sm" onclick="itemPrev()">Previous</button>
+          <span id="i-page-info"></span>
+          <button class="btn btn-gray btn-sm" onclick="itemNext()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: WORKERS -->
+  <div class="tab-pane" id="pane-3">
+    <div class="no-data" id="w-nodata">Load a save file to begin editing.</div>
+    <div id="w-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Shop Workers (9 Slots)</div>
+        <div class="worker-grid" id="w-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: GRADING -->
+  <div class="tab-pane" id="pane-4">
+    <div class="no-data" id="g-nodata">Load a save file to begin editing.</div>
+    <div id="g-form" style="display:none">
+      <div class="card">
+        <div class="card-title" style="justify-content: space-between;">
+          In-Progress Grading Batches
+          <button class="btn btn-g btn-sm" onclick="completeAllBatches()">Complete All Now</button>
+        </div>
+        <div id="g-inprogress"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Pending Submission</div>
+        <div id="g-pending"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Completed Graded Cards (<span id="g-count">0</span>)</div>
+        <div id="g-completed"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: ACHIEVEMENTS -->
+  <div class="tab-pane" id="pane-5">
+    <div class="no-data" id="a-nodata">Load a save file to begin editing.</div>
+    <div id="a-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Achievements (100)</div>
+        <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="btn btn-g" onclick="unlockAllAch()">Unlock All</button>
+          <button class="btn btn-gray" onclick="lockAllAch()">Lock All</button>
+        </div>
+        <div class="ach-grid" id="ach-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Decoration Unlocks</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+          <button class="btn btn-p" onclick="unlockAllDeco('Wall')">Unlock Walls</button>
+          <button class="btn btn-p" onclick="unlockAllDeco('Floor')">Unlock Floors</button>
+          <button class="btn btn-p" onclick="unlockAllDeco('Ceiling')">Unlock Ceilings</button>
+        </div>
+        <div class="stat-bar">
+          <div class="stat" id="deco-wall-stat">Walls: 0/1001</div>
+          <div class="stat" id="deco-floor-stat">Floors: 0/1001</div>
+          <div class="stat" id="deco-ceil-stat">Ceilings: 0/1001</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Decoration Inventory</div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <span id="deco-inv-stat" class="stat" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: var(--gold);">Total: 0</span>
+          <button class="btn btn-gold" onclick="setAllDecoInventory()">Add All Decor (Set to 1)</button>
+          <button class="btn btn-r" onclick="clearDecoInventory()">Clear Inventory</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 6: REVIEWS -->
+  <div class="tab-pane" id="pane-6">
+    <div class="no-data" id="rv-nodata">Load a save file to begin editing.</div>
+    <div id="rv-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Customer Reviews</div>
+        <div id="rv-summary" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;"></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+          <button class="btn btn-g" onclick="rvSetAllStars(5)">Set All 5★</button>
+          <button class="btn btn-gray" onclick="rvSetAllStars(1)">Set All 1★</button>
+          <input type="text" id="rv-search" placeholder="Search customer name..." style="width:220px">
+          <span style="font-size:12px;color:var(--muted);">Average is recalculated automatically from the reviews below.</span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Customer</th><th>Stars</th><th>Type</th><th>When</th></tr></thead>
+            <tbody id="rv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 7: SHOP & STATS -->
+  <div class="tab-pane" id="pane-7">
+    <div class="no-data" id="ss-nodata">Load a save file to begin editing.</div>
+    <div id="ss-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Bills</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="btn btn-g" onclick="clearAllBills()">Set All Bills to 0</button>
+          <span style="font-size:12px;color:var(--muted);align-self:center;">Set the amount you still owe for each bill.</span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Bill</th><th>Days Passed</th><th>Amount To Pay</th></tr></thead>
+            <tbody id="bill-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Statistics (All-Time)</div>
+        <div id="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Automation Settings</div>
+        <div id="settings-grid" class="form-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Champion Cards &amp; Tournament</div>
+        <div id="champ-tourney"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 8: FURNITURE -->
+  <div class="tab-pane" id="pane-8">
+    <div class="no-data" id="fn-nodata">Load a save file to begin editing.</div>
+    <div id="fn-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Furniture (MY DIY)</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+          <span id="fn-shoplevel" style="font-size:13px;font-weight:700;color:var(--cyan);background:rgba(6,182,212,0.1);padding:6px 12px;border-radius:99px;"></span>
+          <input type="text" id="fn-search" placeholder="Search furniture..." style="width:220px">
+          <span style="font-size:12px;color:var(--muted);">Click a furniture to see details. Furniture unlocks automatically by Shop Level.</span>
+        </div>
+        <div id="fn-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 9: RAW JSON -->
+  <div class="tab-pane" id="pane-9">
+    <div class="card">
+      <div class="card-title">Raw JSON Editor</div>
+      <div class="json-tools">
+        <span id="json-lc" style="color:var(--cyan);font-size:13px;font-weight:700;min-width:100px;background:rgba(6,182,212,0.1);padding:6px 12px;border-radius:99px;">No data</span>
+        <input type="text" id="json-search" placeholder="Search text..." style="width:200px">
+        <input type="text" id="json-replace" placeholder="Replace with..." style="width:200px">
+        <button class="btn btn-gray" onclick="jsonReplaceAll()">Replace All</button>
+        <button class="btn btn-p" onclick="applyJsonChanges()" style="margin-left:auto;">Apply JSON Changes</button>
+      </div>
+      <div id="json-msg"></div>
+      <textarea id="raw-json-area" spellcheck="false" oninput="updateJsonLineCount()">Load a save file to see JSON...</textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Save Modal -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <h3>Save Options</h3>
+    <p>Would you like to download a backup of your original file before saving the modified version?</p>
+    <div class="modal-btns">
+      <button class="btn btn-gold" onclick="downloadBackupThenSave()">Yes, Download Backup</button>
+      <button class="btn btn-p" onclick="doSave()">No, Just Save</button>
+      <button class="btn btn-gray" onclick="closeSaveModal()">Cancel</button>
+    </div>
+  </div>
+</div><div style="text-align: center; font-size: 12px; color: var(--muted); opacity: 0.6; margin: 40px 0 20px; font-weight: 500;">
+  made by Mirfy&lt;3
+</div>
+
+<script>
+// ========================================================
+// SAFETY HELPER - escape text for safe DOM insertion
+// ========================================================
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+// ========================================================
+// GLOBAL STATS COUNTER
+// ========================================================
+var COUNTER_NAMESPACE = 'tcgsaveeditor_mirfy';
+var COUNTER_KEY = 'saves_helped';
+
+function fetchGlobalStats() {
+  fetch('https://api.counterapi.dev/v1/' + COUNTER_NAMESPACE + '/' + COUNTER_KEY + '/')
+    .then(function(r){ 
+      if (!r.ok) throw new Error('API Error');
+      return r.json(); 
+    })
+    .then(function(data){
+      var el = document.getElementById('global-saves-count');
+      if (el && data && data.count !== undefined) {
+        el.textContent = data.count.toLocaleString();
+        localStorage.setItem('cached_saves_count', data.count);
+      }
+    })
+    .catch(function(e){ 
+      console.error('Failed to fetch stats:', e);
+      var el = document.getElementById('global-saves-count');
+      var cached = localStorage.getItem('cached_saves_count');
+      if (el) el.textContent = cached ? Number(cached).toLocaleString() : '0';
+    });
+}
+
+function incrementGlobalStats() {
+  fetch('https://api.counterapi.dev/v1/' + COUNTER_NAMESPACE + '/' + COUNTER_KEY + '/up')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var el = document.getElementById('global-saves-count');
+      if (el && data && data.count !== undefined) el.textContent = data.count.toLocaleString();
+    })
+    .catch(function(e){ console.error('Failed to increment stats:', e); });
+}
+
+document.addEventListener('DOMContentLoaded', fetchGlobalStats);
+
+
+// ========================================================
+// STATE
+// ========================================================
+var saveData = null;
+var originalData = null;
+var loadedFileName = 'GameData_1';   // name of the loaded file (reused when exporting)
+var loadedWasGzip = true;            // whether the source file was gzip (GameData_*) or plain JSON
+var cardImages = {};
+var unsavedChanges = false;
+var currentTab = 0;
+var cardPage = 0;
+var itemPage = 0;
+var currentExpKey = 'tetramon';
+var cachedRows = null;
+var cachedRowsExp = null;
+var CARDS_PER_PAGE = 60;
+var ITEMS_PER_PAGE = 50;
+
+// ========================================================
+// MONSTER NAMES
+// ========================================================
+var TETRAMON_NAMES = {1:'PiggyA',2:'PiggyB',3:'PiggyC',4:'PiggyD',5:'FoxA',6:'FoxB',7:'FoxC',8:'FoxD',9:'GolemA',10:'GolemB',11:'GolemC',12:'GolemD',13:'TreeA',14:'TreeB',15:'TreeC',16:'TreeD',17:'StarfishA',18:'StarfishB',19:'StarfishC',20:'StarfishD',21:'ShellyA',22:'ShellyB',23:'ShellyC',24:'ShellyD',25:'BugA',26:'BugB',27:'BugC',28:'BugD',29:'BatA',30:'BatB',31:'BatC',32:'BatD',33:'Skull',34:'Beetle',35:'Bear',36:'Jellyfish',37:'Wisp',38:'MummyMan',39:'FlowerA',40:'FlowerB',41:'FlowerC',42:'FlowerD',43:'WeirdBirdA',44:'FireSpirit',45:'Angez',46:'Mosquito',47:'HydraA',48:'HydraB',49:'HydraC',50:'HydraD',51:'DragonFire',52:'DragonEarth',53:'DragonWater',54:'DragonThunder',55:'Turtle',56:'FireWolfA',57:'FireWolfB',58:'FireWolfC',59:'FireWolfD',60:'FishA',61:'FishB',62:'FishC',63:'FishD',64:'HalloweenA',65:'HalloweenB',66:'HalloweenC',67:'HalloweenD',68:'TronA',69:'TronB',70:'TronC',71:'TronD',72:'LobsterA',73:'LobsterB',74:'LobsterC',75:'LobsterD',76:'FireBirdA',77:'FireBirdB',78:'FireBirdC',79:'SerpentA',80:'SerpentB',81:'SerpentC',82:'CloudA',83:'CloudB',84:'CloudC',85:'EmeraldA',86:'EmeraldB',87:'EmeraldC',88:'Crystalmon',89:'ElecDragon',90:'CrabA',91:'CrabB',92:'FireUmbrellaDragon',93:'Lanternmon',94:'SeedBugA',95:'SeedBugB',96:'SeedBugC',97:'NinjaBirdA',98:'NinjaBirdB',99:'NinjaBirdC',100:'NinjaBirdD',101:'NinjaCrowC',102:'NinjaCrowD',103:'MuffinTreeA',104:'MuffinTreeB',105:'MuffinTreeC',106:'SharkFishA',107:'SharkFishB',108:'SharkFishC',109:'FireGeckoA',110:'FireGeckoB',111:'EarthDino',112:'FireChickenA',113:'FireChickenB',114:'SeahorseA',115:'SeahorseB',116:'SeahorseC',117:'SeahorseD',118:'SlimeA',119:'SlimeB',120:'SlimeC',121:'SlimeD'};
+var MEGABOT_NAMES = {1000:'Alpha',1001:'Beta',1002:'Gamma',1003:'Ronin',1004:'Bumblebee',1005:'Orca',1006:'Garuda',1007:'Viper',1008:'Blitz',1009:'Cylops',1010:'Kabuto',1011:'Minotaur',1012:'Spectre',1013:'Wolf',1014:'Bolt',1015:'Hawk',1016:'Cyber',1017:'Space',1018:'Hangar',1019:'Arena',1020:'UndergroundDark',1021:'UndergroundLight',1022:'RoninBoss',1023:'OrcaBoss',1024:'GarudaBoss',1025:'ViperBoss',1026:'Max',1027:'Shockwave',1028:'Tremor',1029:'Rhino',1030:'RoninArt',1031:'GarudaArt',1032:'MaxArt',1033:'MinotaurArt',1034:'WolfArt',1035:'SkullArt',1036:'OrcaAlt',1037:'GarudaAlt',1038:'ViperAlt',1039:'KabutoAlt',1040:'Neon',1041:'Pulse',1042:'Raptor',1043:'AncientHammer',1044:'ArcMissile',1045:'Axe',1046:'BarrageMissile',1047:'BarrelHammer',1048:'BattleChip',1049:'BoxingGlove',1050:'ChainGun',1051:'ChillMissile',1052:'ColdShoulder',1053:'CrescentClaw',1054:'CrescentMachete',1055:'CrimsonWheel',1056:'CryoBlaster',1057:'Drill',1058:'DualMissile',1059:'ElecBroadsword',1060:'ElectricChainsaw',1061:'ElectricSpike',1062:'EnergyShield',1063:'FanBlade',1064:'FeatherBlade',1065:'FireAxe',1066:'FireBroadsword',1067:'FireKatana',1068:'FireRocket',1069:'FireShield',1070:'FireTwinAxe',1071:'Flamethrower',1072:'FreezeBomb',1073:'GigaBlade',1074:'GigaCannon',1075:'GreatCleaver',1076:'HeatKnife',1077:'HeatMissile',1078:'IceBroadsword',1079:'IceMortar',1080:'IcePike',1081:'IceSpinner',1082:'IceTwinSpear',1083:'InfernoBoost',1084:'IronBall',1085:'JetBurner',1086:'Katana',1087:'KnightShield',1088:'KnightSword',1089:'LightSaber',1090:'LionShield',1091:'MagneticCoil',1092:'MaulerMace',1093:'MegavoltBeam',1094:'MiniMissile',1095:'MissileCannon',1096:'MoonlightBlade',1097:'MorningStar',1098:'Mortar',1099:'PulseCannon',1100:'RailCannon',1101:'Ravager',1102:'RocketMissile',1103:'RollerSpike',1104:'ShurikenBlade',1105:'SonicBlaster',1106:'SpikeBall',1107:'SpikedWarhammer',1108:'Sword',1109:'ThorHammer',1110:'Thunderblade',1111:'ThunderTwinBlade',1112:'WingBooster'};
+var FANTASYRPG_NAMES = {2000:'Archer',2001:'ArmoredSlime',2002:'AxeWarrior',2003:'Basilisk',2004:'Blacksmith',2005:'CatMage',2006:'CatPirate',2007:'CatThief',2008:'Cook',2009:'DarkKnight',2010:'Dragon',2011:'DragonKnight',2012:'EldritchCreature',2013:'Farmer',2014:'Fencer',2015:'Florist',2016:'GoblinMage',2017:'GoblinThief',2018:'GoblinWarrior',2019:'Golem',2020:'Grandma',2021:'Harpy1',2022:'Harpy2',2023:'InkKnight',2024:'Jester1',2025:'Jester2',2026:'King',2027:'Knight',2028:'Lamia',2029:'Mage',2030:'Mimic1',2031:'Mimic2',2032:'MushroomMonster',2033:'Noble1',2034:'Noble2',2035:'Peasant1',2036:'Peasant2',2037:'Phoenix',2038:'Queen',2039:'Reaper',2040:'Schoolboy1',2041:'Schoolboy2',2042:'Slime',2043:'Snake',2044:'Traveller',2045:'TreeMonster',2046:'Vampire',2047:'Witch',2048:'Wizard',2049:'WolfFantasy'};
+var CATJOB_NAMES = {3000:'Teacher',3001:'Detective',3002:'Woodworker',3003:'Plumber',3004:'Electrician',3005:'Soldier',3006:'General',3007:'Police',3008:'Fireman',3009:'Farmer',3010:'Architect',3011:'Construction',3012:'Bodybuilder',3013:'Archer',3014:'Explorer',3015:'Hiker',3016:'Programmer',3017:'Librarian',3018:'Laundry',3019:'Racer',3020:'Florist',3021:'Geologist',3022:'Gamer',3023:'Maid',3024:'Barber',3025:'Bartender',3026:'Bouncer',3027:'Composer',3028:'Director',3029:'Investor',3030:'Singer',3031:'Musician',3032:'Artist',3033:'Photographer',3034:'Lawyer',3035:'Janitor',3036:'Psychic',3037:'Astronaut',3038:'Scout',3039:'Pirate'};
+// Ascension set (121 monsters). The wiki does not document Ascension card names yet,
+// so generated placeholders are used. Offset 4000 keeps it distinct from other sets.
+var ASCENSION_NAMES = (function(){ var o={}; for (var i=0;i<121;i++){ o[4000+i] = 'Ascension #' + (i+1); } return o; })();
+
+var BORDER_NAMES =['Base','1st Edition','Silver','Gold','EX','Full Art'];
+var BORDER_CLASSES =['rarity-base','rarity-first','rarity-silver','rarity-gold','rarity-ex','rarity-fullart'];
+var SVC_LABELS =['Standard','Express','Premium'];
+
+// ========================================================
+// WIKI CARD DATA (names + images from tcgcardshopsimulator.wiki.gg)
+// Only Tetramon Base, Destiny and Ghost sets are documented on the wiki.
+// Tetramon Base and Destiny share identical monster names/art (001..121).
+// ========================================================
+var WIKI_CARD_NAMES = {1:"Pigni",2:"Burpig",3:"Inferhog",4:"Blazoar",5:"Kidsune",6:"Bonfiox",7:"Honobi",8:"Kyuenbi",9:"Nanomite",10:"Decimite",11:"Meganite",12:"Giganite",13:"Sapoling",14:"Forush",15:"Timbro",16:"Mammotree",17:"Minstar",18:"Trickstar",19:"Princestar",20:"Kingstar",21:"Shellow",22:"Clamigo",23:"Aquariff",24:"Fistronk",25:"Wurmgle",26:"Pupazz",27:"Mothini",28:"Royalama",29:"Nocti",30:"Lunight",31:"Vampicant",32:"Dracunix",33:"Minotos",34:"Drilceros",35:"Grizzaw",36:"Jelicleen",37:"Wispo",38:"Mummog",39:"Helio",40:"Pixy",41:"Flory",42:"Magnoria",43:"Werboo",44:"Flami",45:"Angez",46:"Moskit",47:"Kyrone",48:"Twofrost",49:"Threeze",50:"Hydroid",51:"Drakon",52:"Bogon",53:"Hydron",54:"Raizon",55:"Tortugor",56:"Lupup",57:"Luphire",58:"Lucinder",59:"Lucadence",60:"Gupi",61:"Sharfin",62:"Gilgabass",63:"Jigajawr",64:"Batrang",65:"Dusko",66:"Wolgin",67:"Jacktern",68:"Tetron",69:"Raxx",70:"Gannon",71:"GigatronX",72:"Clawop",73:"Clawdos",74:"Clawaken",75:"Clawcifear",76:"Sunflork",77:"Scarlios",78:"Scarkgorus",79:"Crobib",80:"Crosilisk",81:"Crorathian",82:"Nimblis",83:"Nimboculo",84:"Nimbustrike",85:"Esmeri",86:"Esmerock",87:"Esmerdios",88:"Litspire",89:"Voltrex",90:"Crablox",91:"Clawvenger",92:"Flambrolly",93:"Lumie",94:"Seedant",95:"Budwing",96:"Buzzeed",97:"Beakai",98:"Talontsu",99:"Talonika",100:"Talonryu",101:"Kataryu",102:"Katengu",103:"Mufflin",104:"Muffleur",105:"Mufflimax",106:"Anguifish",107:"Amneshark",108:"Amnesilla",109:"Frizard",110:"Gekoflare",111:"Terradrakon",112:"Flamchik",113:"Pyropeck",114:"Poseia",115:"Posteed",116:"Poseigon",117:"Poseidrake",118:"Sludglop",119:"Sludgetox",120:"Toxigoop",121:"Toximuck"};
+var WIKI_GHOST_FILES = {0:"Ghost_PiggyD",1:"Ghost_FoxD",2:"Ghost_GolemD",3:"Ghost_TreeD",4:"Ghost_StarfishD",5:"Ghost_ShellyD",6:"Ghost_BugD",7:"Ghost_BatD",8:"Ghost_FlowerD",9:"Ghost_HydraD",10:"Ghost_DragonFire",11:"Ghost_DragonEarth",12:"Ghost_DragonWater",13:"Ghost_DragonThunder",14:"Ghost_FireWolfD",15:"Ghost_FishD",16:"Ghost_HalloweenD",17:"Ghost_TronD",18:"Ghost_LobsterD",19:"Ghost_NinjaCrowD"};
+var WIKI_GHOST_NAMES = {0:"Blazoar",1:"Kyuenbi",2:"Giganite",3:"Mammotree",4:"Kingstar",5:"Fistronk",6:"Royalama",7:"Dracunix",8:"Magnoria",9:"Hydroid",10:"Drakon",11:"Bogon",12:"Hydron",13:"Raizon",14:"Lucadence",15:"Jigajawr",16:"Jacktern",17:"GigatronX",18:"Clawcifear",19:"Katengu"};
+var WIKI_IMG_BASE = "https://tcgcardshopsimulator.wiki.gg/images/";
+// Ghost card backgrounds: White (ghost) vs Black (ghostblack). The monster art is identical;
+// only the background differs between the two sets.
+var WIKI_GHOST_BG = {
+  white: WIKI_IMG_BASE + "CardBG_Ghost.png",
+  black: WIKI_IMG_BASE + "CardBG_GhostBlack.png"
+};
+
+// ========================================================
+// WORKER INFO (from tcgcardshopsimulator.wiki.gg/wiki/Workers)
+// Slot order follows the in-game unlock order (by Level Unlocked).
+// NOTE: the save file stores no worker identifier per slot, so the slot->worker
+// mapping below is based on the unlock order documented on the wiki.
+// ========================================================
+var WORKER_INFO = [
+  {name:"Zackery Cole",   level:10, restock:"Normal",    checkout:"Slow",      fee:500,   salary:50,  img:"Icon_Worker1.png"},
+  {name:"Terence Fay",    level:15, restock:"Slow",      checkout:"Normal",    fee:1000,  salary:150, img:"Icon_Worker0.png"},
+  {name:"Dennis Brandon", level:20, restock:"Fast",      checkout:"Normal",    fee:2000,  salary:300, img:"Icon_Worker2.png"},
+  {name:"Clark Cash",     level:25, restock:"Slow",      checkout:"Very Fast", fee:2400,  salary:400, img:"Icon_Worker3.png"},
+  {name:"Angus Mick",     level:30, restock:"Very Fast", checkout:"Slow",      fee:3000,  salary:500, img:"Icon_Worker4.png"},
+  {name:"Benji Otto",     level:35, restock:"Fast",      checkout:"Fast",      fee:5000,  salary:500, img:"Icon_Worker5.png"},
+  {name:"Alexander Cole", level:38, restock:"Fast",      checkout:"Fast",      fee:8000,  salary:400, img:"Icon_worker8.png"},
+  {name:"Lauren Posie",   level:40, restock:"Fast",      checkout:"Fast",      fee:7500,  salary:500, img:"Icon_Worker6.png"},
+  {name:"Axel Charleton", level:45, restock:"Very Fast", checkout:"Very Fast", fee:10000, salary:700, img:"Icon_Worker7.png"}
+];
+function workerImgUrl(i){ return (WORKER_INFO[i] ? WIKI_IMG_BASE + WORKER_INFO[i].img : ''); }
+
+// Returns the wiki image URL for a given card row, or '' if not available.
+function cardImageUrl(expKey, row) {
+  if (expKey === 'ghost' || expKey === 'ghostblack') {
+    var gf = WIKI_GHOST_FILES[row.li];
+    return gf ? (WIKI_IMG_BASE + gf + '.png') : '';
+  }
+  if (expKey === 'tetramon' || expKey === 'destiny') {
+    var nm = WIKI_CARD_NAMES[row.monsterType];
+    if (!nm) return '';
+    var num = ('000' + row.monsterType).slice(-3);
+    return WIKI_IMG_BASE + num + '_' + nm + '.png';
+  }
+  return ''; // Megabot / Fantasy RPG / Cat Job: no wiki data
+}
+
+// Returns the Ghost card background URL for the given set, or '' if not a Ghost set.
+function cardGhostBg(expKey) {
+  if (expKey === 'ghost') return WIKI_GHOST_BG.white;
+  if (expKey === 'ghostblack') return WIKI_GHOST_BG.black;
+  return '';
+}
+
+// Returns the wiki display name for a card row, or '' if not available.
+function cardWikiName(expKey, row) {
+  if (expKey === 'ghost' || expKey === 'ghostblack') return WIKI_GHOST_NAMES[row.li] || '';
+  if (expKey === 'tetramon' || expKey === 'destiny') return WIKI_CARD_NAMES[row.monsterType] || '';
+  return '';
+}
+
+// ========================================================
+// ACHIEVEMENT NAMES (community sources). NOTE: the in-game save index order is
+// NOT officially documented, so this ordering is a best-effort guess. Names are
+// shown as a hint only — the underlying index is always displayed alongside.
+// ========================================================
+var ACHIEVEMENT_NAMES = {
+  0:"Established Shop",1:"Basic Card Box",2:"Rare Card Pack",3:"Cozy Card Shop",4:"Novice Collector",
+  5:"Packaholic",6:"Who You Gonna Call?",7:"Epic Card Pack",8:"Minor Shop Expansion",9:"Helping Hand",
+  10:"Novice Seller",11:"Petty Cash",12:"Sick Pull",13:"Respected Shop",14:"Legendary Card Pack",
+  15:"BO Buster!",16:"All Your Base",17:"I Can't Stop",18:"I LOVE Working in Retail",19:"Serious Collector",
+  20:"Popular Card Shop",21:"Destiny Basic Pack",22:"Major Shop Expansion",23:"Destiny Rare Pack",24:"Tight-Knit Team",
+  25:"Lucky Bastard",26:"Destiny Epic Pack",27:"Influential Shop",28:"Full Shop Expansion",29:"I'm Rich!",
+  30:"Pro Seller",31:"Top Recruiter",32:"Legendary Shop",33:"THE Card Shop",34:"JUST ONE MORE!",
+  35:"Pro Collector",36:"Capitalism HO!",37:"Ultimate Seller",38:"Card Connossier",39:"Destiny Legendary Pack"
+};
+
+var EXPANSIONS =[
+  {key:'tetramon',  label:'Tetramon',   suffix:'',          isGhost:false, imgKey:'tetramon',  monsters:TETRAMON_NAMES,  offset:1,    count:121},
+  {key:'destiny',   label:'Destiny',    suffix:'Destiny',   isGhost:false, imgKey:'destiny',   monsters:TETRAMON_NAMES,  offset:1,    count:121},
+  {key:'megabot',   label:'Megabot',    suffix:'Megabot',   isGhost:false, imgKey:'megabot',   monsters:MEGABOT_NAMES,   offset:1000, count:113},
+  {key:'fantasyrpg',label:'Fantasy RPG',suffix:'FantasyRPG',isGhost:false, imgKey:'fantasyrpg',monsters:FANTASYRPG_NAMES,offset:2000, count:50},
+  {key:'catjob',    label:'Cat Job',    suffix:'CatJob',    isGhost:false, imgKey:'catjob',    monsters:CATJOB_NAMES,    offset:3000, count:40},
+  {key:'ascension', label:'Ascension',  suffix:'Ascension', isGhost:false, imgKey:'ascension', monsters:ASCENSION_NAMES, offset:4000, count:121},
+  {key:'ghost',     label:'Ghost',      suffix:'Ghost',     isGhost:true,  imgKey:'ghost',     monsters:null,            offset:0,    count:200},
+  {key:'ghostblack',label:'Ghost Black',suffix:'GhostBlack',isGhost:true,  imgKey:'ghostblack',monsters:null,            offset:0,    count:200},
+];
+
+// ========================================================
+// SAVE INDEX FORMULA
+// ========================================================
+function getSaveIndex(listIdx, borderType, isFoil, isGhost) {
+  if (isGhost) return listIdx * 2 + (isFoil ? 1 : 0);
+  return listIdx * 12 + borderType + (isFoil ? 6 : 0);
+}
+
+function getExp(key) { return EXPANSIONS.find(function(e){return e.key===key;}); }
+
+function suffixOf(expKey) {
+  var e = getExp(expKey);
+  return e ? e.suffix : '';
+}
+function ck(ek)  { return 'm_CardCollectedList'    + suffixOf(ek); }
+function ick(ek) { return 'm_IsCardCollectedList'  + suffixOf(ek); }
+function pk(ek)  { return 'm_CardPriceSetList'     + suffixOf(ek); }
+function mk(ek)  { return 'm_GenCardMarketPriceList'+ suffixOf(ek); }
+
+function ensureCardArrays(ek) {[ck(ek), ick(ek), pk(ek)].forEach(function(k) {
+    if (!Array.isArray(saveData[k])) saveData[k] = [];
+    while (saveData[k].length < 2100) saveData[k].push(k === ick(ek) ? false : 0);
+  });
+  var mKey = mk(ek);
+  if (!Array.isArray(saveData[mKey])) saveData[mKey] = [];
+  while (saveData[mKey].length < 2100) saveData[mKey].push({generatedMarketPrice:0,pricePercentChangeList:0,pastPricePercentChangeList:[]});
+}
+
+// ========================================================
+// BUILD CARD ROWS
+// ========================================================
+function buildCardRows(expKey) {
+  var exp = getExp(expKey);
+  if (!exp) return[];
+  ensureCardArrays(expKey);
+  var rows =[];
+
+  if (exp.isGhost) {
+    for (var li = 0; li < exp.count; li++) {
+      for (var f = 0; f <= 1; f++) {
+        var si = getSaveIndex(li, 0, f===1, true);
+        if (si >= 2100) break;
+        var copies = saveData[ck(expKey)][si] || 0;
+        var isColl = !!(saveData[ick(expKey)][si]);
+        var sellP  = saveData[pk(expKey)][si] || 0;
+        var mObj   = saveData[mk(expKey)][si];
+        var mktP   = mObj ? (mObj.generatedMarketPrice || 0) : 0;
+        rows.push({li:li, monsterType:li, borderType:0, isFoil:f===1, si:si, copies:copies, isColl:isColl, sellP:sellP, mktP:mktP, name:'Ghost Card #'+li});
+      }
+    }
+  } else {
+    var mList = exp.monsters;
+    Object.keys(mList).forEach(function(mtStr) {
+      var mt = parseInt(mtStr);
+      var li = mt - exp.offset;
+      for (var b = 0; b < 6; b++) {
+        for (var f = 0; f <= 1; f++) {
+          var si = getSaveIndex(li, b, f===1, false);
+          if (si < 0 || si >= 2100) continue;
+          var copies = saveData[ck(expKey)][si] || 0;
+          var isColl = !!(saveData[ick(expKey)][si]);
+          var sellP  = saveData[pk(expKey)][si] || 0;
+          var mObj   = saveData[mk(expKey)][si];
+          var mktP   = mObj ? (mObj.generatedMarketPrice || 0) : 0;
+          rows.push({li:li, monsterType:mt, borderType:b, isFoil:f===1, si:si, copies:copies, isColl:isColl, sellP:sellP, mktP:mktP, name:mList[mt]||('Mon#'+mt)});
+        }
+      }
+    });
+    rows.sort(function(a,b){ return a.li-b.li || a.borderType-b.borderType || (a.isFoil?1:0)-(b.isFoil?1:0); });
+  }
+  return rows;
+}
+
+// ========================================================
+// FILE LOADING
+// ========================================================
+document.getElementById('file-input').addEventListener('change', function(e) {
+  var f = e.target.files[0];
+  if (f) loadSaveFile(f);
+  this.value = '';
+});
+document.getElementById('images-input').addEventListener('change', function(e) {
+  var f = e.target.files[0];
+  if (f) loadImagesFile(f);
+  this.value = '';
+});
+
+document.addEventListener('dragover', function(e){ e.preventDefault(); document.getElementById('drop-overlay').classList.add('show'); });
+document.addEventListener('dragleave', function(e){ if (!e.relatedTarget) document.getElementById('drop-overlay').classList.remove('show'); });
+document.addEventListener('drop', function(e){
+  e.preventDefault();
+  document.getElementById('drop-overlay').classList.remove('show');
+  var f = e.dataTransfer.files[0];
+  if (f) loadSaveFile(f);
+});
+
+function loadSaveFile(file) {
+  var r = new FileReader();
+  r.onload = function(e) {
+    try {
+      var bytes = new Uint8Array(e.target.result);
+      var text;
+      // Detect gzip via magic number 0x1F 0x8B
+      if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+        if (typeof pako === 'undefined') {
+          showMsg('err', 'The pako library is not loaded (internet is required the first time). Please reload the page.');
+          return;
+        }
+        text = pako.ungzip(bytes, { to: 'string' });
+        loadedWasGzip = true;
+      } else {
+        // Treat as plain text (JSON / .txt)
+        text = new TextDecoder('utf-8').decode(bytes);
+        loadedWasGzip = false;
+      }
+
+      var parsed = JSON.parse(text);
+      if (!Object.prototype.hasOwnProperty.call(parsed, 'm_PlayerName')) {
+        showMsg('err', 'Not a valid Card Shop Simulator save file (missing m_PlayerName).');
+        return;
+      }
+      saveData = parsed;
+      originalData = text;
+      loadedFileName = file.name || (loadedWasGzip ? 'GameData_1' : 'savedGames_Release0.json');
+      unsavedChanges = false;
+      document.getElementById('save-btn').disabled = false;
+      document.getElementById('unsaved').style.display = 'none';
+      var wp = document.getElementById('welcome-panel');
+      if (wp) wp.style.display = 'none';
+      renderAll();
+      showMsg('ok', loadedWasGzip
+        ? ('Loaded "' + loadedFileName + '" (gzip GameData). Exporting will produce a valid GameData file.')
+        : ('Loaded "' + loadedFileName + '" (JSON).'));
+    } catch(err) {
+      showMsg('err', 'Failed to load file: ' + err.message);
+    }
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function loadImagesFile(file) {
+  var r = new FileReader();
+  r.onload = function(e) {
+    try {
+      var imgs = JSON.parse(e.target.result);
+      cardImages = imgs;
+      renderExpSelector();
+      showMsg('ok', 'Card images loaded.');
+    } catch(err) {
+      showMsg('err', 'Failed to parse card_images.json: ' + err.message);
+    }
+  };
+  r.readAsText(file);
+}
+
+function showMsg(type, msg) {
+  var el = document.createElement('div');
+  el.className = type === 'err' ? 'err-msg' : 'ok-msg';
+  el.textContent = msg;
+  var cont = document.getElementById('global-msg');
+  cont.appendChild(el);
+  setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 5000);
+}
+
+function markChanged() {
+  unsavedChanges = true;
+  document.getElementById('unsaved').style.display = 'inline-block';
+  if (currentTab === 9) updateRawJson();
+}
+
+// ========================================================
+// TABS
+// ========================================================
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    var idx = parseInt(this.getAttribute('data-tab'));
+    switchTab(idx);
+  });
+});
+
+function switchTab(idx) {
+  currentTab = idx;
+  document.querySelectorAll('.tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  document.querySelectorAll('.tab-pane').forEach(function(p,i){ p.classList.toggle('active', i===idx); });
+  if (idx === 6 && saveData) renderReviews();
+  if (idx === 7 && saveData) renderShopStats();
+  if (idx === 8 && saveData) renderFurniture();
+  if (idx === 9 && saveData) updateRawJson();
+}
+
+function renderAll() {
+  renderPlayer();
+  renderExpSelector();
+  cachedRows = null; cachedRowsExp = null;
+  cardPage = 0;
+  renderCards();
+  itemPage = 0;
+  renderItems();
+  renderWorkers();
+  renderGrading();
+  renderAchievements();
+  renderReviews();
+  renderShopStats();
+  renderFurniture();
+  if (currentTab === 9) updateRawJson();
+}
+
+// ========================================================
+// TAB 0: PLAYER
+// ========================================================
+function renderPlayer() {
+  if (!saveData) return;
+  document.getElementById('p-nodata').style.display = 'none';
+  document.getElementById('p-form').style.display = 'block';
+  var sd = saveData;
+  setV('p_name', sd.m_PlayerName || '');
+  var coins = sd.m_CoinAmountDouble !== undefined ? sd.m_CoinAmountDouble : (sd.m_CoinAmount || 0);
+  setV('p_coins', coins);
+  setV('p_shopLevel', sd.m_ShopLevel || 0);
+  setV('p_shopExp', sd.m_ShopExpPoint || 0);
+  setV('p_fame', sd.m_FamePoint || 0);
+  setV('p_totalFame', sd.m_TotalFameAdd || 0);
+  setV('p_day', sd.m_CurrentDay || 0);
+  setV('p_reviewAvg', sd.m_CustomerReviewScoreAverage !== undefined ? sd.m_CustomerReviewScoreAverage : 5);
+  setV('p_reviewCount', sd.m_CustomerReviewCount || 0);
+  setV('p_unlockRoom', sd.m_UnlockRoomCount || 0);
+  setV('p_unlockWH', sd.m_UnlockWarehouseRoomCount || 0);
+  setV('p_tutIndex', sd.m_TutorialIndex || 0);
+  setCh('p_shopOpen', !!sd.m_IsShopOpen);
+  setCh('p_tutDone', !!sd.m_HasFinishedTutorial);
+  setCh('p_warehouseUnlocked', !!sd.m_IsWarehouseRoomUnlocked);
+  setCh('p_scannerUnlocked', !!sd.m_IsScannerRestockUnlocked);
+
+  bindPlayerInputs();
+}
+
+var playerInputsBound = false;
+function bindPlayerInputs() {
+  if (playerInputsBound) return;
+  playerInputsBound = true;
+  bindInput('p_name', function(v){ saveData.m_PlayerName = v; markChanged(); });
+  bindInput('p_coins', function(v){ var n=parseFloat(v)||0; saveData.m_CoinAmount=n; saveData.m_CoinAmountDouble=n; markChanged(); });
+  bindInput('p_shopLevel', function(v){ saveData.m_ShopLevel=parseInt(v)||0; markChanged(); });
+  bindInput('p_shopExp', function(v){ saveData.m_ShopExpPoint=parseInt(v)||0; markChanged(); });
+  bindInput('p_fame', function(v){ saveData.m_FamePoint=parseInt(v)||0; markChanged(); });
+  bindInput('p_totalFame', function(v){ saveData.m_TotalFameAdd=parseInt(v)||0; markChanged(); });
+  bindInput('p_day', function(v){ saveData.m_CurrentDay=parseInt(v)||0; markChanged(); });
+  // Review Avg Total = the game's all-time average (m_CustomerReviewScoreAverage).
+  // Freely editable; does NOT touch the per-review star levels in the Reviews tab.
+  bindInput('p_reviewAvg', function(v){
+    var val = parseFloat(v);
+    if (isNaN(val)) val = 0;
+    val = Math.min(5, Math.max(0, val));
+    saveData.m_CustomerReviewScoreAverage = val;
+    markChanged();
+  });
+  bindInput('p_reviewCount', function(v){ saveData.m_CustomerReviewCount=parseInt(v)||0; markChanged(); });
+  bindInput('p_unlockRoom', function(v){ saveData.m_UnlockRoomCount=parseInt(v)||0; markChanged(); });
+  bindInput('p_unlockWH', function(v){ saveData.m_UnlockWarehouseRoomCount=parseInt(v)||0; markChanged(); });
+  bindInput('p_tutIndex', function(v){ saveData.m_TutorialIndex=parseInt(v)||0; markChanged(); });
+  bindCheck('p_shopOpen', function(v){ saveData.m_IsShopOpen=v; markChanged(); });
+  bindCheck('p_tutDone', function(v){ saveData.m_HasFinishedTutorial=v; markChanged(); });
+  bindCheck('p_warehouseUnlocked', function(v){ saveData.m_IsWarehouseRoomUnlocked=v; markChanged(); });
+  bindCheck('p_scannerUnlocked', function(v){ saveData.m_IsScannerRestockUnlocked=v; markChanged(); });
+}
+
+function bindInput(id, fn) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('input', function(){ fn(this.value); });
+}
+function bindCheck(id, fn) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('change', function(){ fn(this.checked); });
+}
+function setV(id, v) { var el = document.getElementById(id); if (el) el.value = v; }
+function setCh(id, v) { var el = document.getElementById(id); if (el) el.checked = v; }
+
+function completeTutorial() {
+  if (!saveData) return;
+  saveData.m_HasFinishedTutorial = true;
+  saveData.m_TutorialIndex = 11;
+  setCh('p_tutDone', true);
+  setV('p_tutIndex', 11);
+  markChanged();
+}
+
+// ========================================================
+// TAB 1: CARDS
+// ========================================================
+function renderExpSelector() {
+  var cont = document.getElementById('exp-selector');
+  if (!cont) return;
+  while (cont.firstChild) cont.removeChild(cont.firstChild);
+  // Per-set visual identity: accent color + representative art.
+  var SET_STYLE = {
+    tetramon:   {color:'#6366f1', art: WIKI_IMG_BASE + '004_Blazoar.png',  bg:null},
+    destiny:    {color:'#ec4899', art: WIKI_IMG_BASE + '050_Hydroid.png',  bg:null},
+    megabot:    {color:'#06b6d4', art:null, bg:null},
+    fantasyrpg: {color:'#a855f7', art:null, bg:null},
+    catjob:     {color:'#f59e0b', art:null, bg:null},
+    ascension:  {color:'#10b981', art:null, bg:null},
+    ghost:      {color:'#e5e7eb', art: WIKI_IMG_BASE + 'Ghost_PiggyD.png', bg:'#f1f5f9'},
+    ghostblack: {color:'#334155', art: WIKI_IMG_BASE + 'Ghost_PiggyD.png', bg:'#0b0b0f'}
+  };
+  EXPANSIONS.forEach(function(exp) {
+    var btn = document.createElement('div');
+    btn.className = 'exp-btn' + (currentExpKey === exp.key ? ' active' : '');
+    var st = SET_STYLE[exp.key] || {color:'var(--accent)', art:null, bg:null};
+
+    // Thumbnail box with a set-colored frame. Monster art (if any) sits on top of
+    // a solid set background so Ghost (light) and Ghost Black (dark) look distinct.
+    var box = document.createElement('div');
+    box.style.cssText = 'position:relative;width:36px;height:50px;border-radius:6px;overflow:hidden;flex:0 0 auto;'
+      + 'box-shadow:0 2px 8px rgba(0,0,0,0.3);border:2px solid ' + st.color + ';'
+      + 'background:' + (st.bg || ('linear-gradient(145deg,' + st.color + ',rgba(0,0,0,0.55))')) + ';'
+      + 'display:flex;align-items:center;justify-content:center;';
+
+    var userImg = cardImages[exp.imgKey];
+    var artUrl = userImg || st.art;
+    if (artUrl) {
+      var img = document.createElement('img');
+      img.src = artUrl;
+      img.alt = exp.label;
+      img.loading = 'lazy';
+      img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:' + (userImg ? 'cover' : 'contain') + ';';
+      img.onerror = function(){ this.style.display = 'none'; };
+      box.appendChild(img);
+    } else {
+      // Sets without art: initial letter on the colored frame
+      var letter = document.createElement('span');
+      letter.textContent = exp.label.charAt(0).toUpperCase();
+      letter.style.cssText = 'font-weight:800;font-size:16px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.6);';
+      box.appendChild(letter);
+    }
+    btn.appendChild(box);
+
+    var sp = document.createElement('span');
+    sp.textContent = exp.label;
+    btn.appendChild(sp);
+    btn.addEventListener('click', function() {
+      currentExpKey = exp.key;
+      cachedRows = null; cachedRowsExp = null;
+      cardPage = 0;
+      renderExpSelector();
+      renderCards();
+    });
+    cont.appendChild(btn);
+  });
+  if (saveData) updateCardsStats();
+}
+
+function updateCardsStats() {
+  var el = document.getElementById('c-stats');
+  if (!el || !saveData) return;
+  ensureCardArrays(currentExpKey);
+  var arr = saveData[ick(currentExpKey)] ||[];
+  var owned = arr.filter(Boolean).length;
+  while (el.firstChild) el.removeChild(el.firstChild);
+  var d = document.createElement('div');
+  d.className = 'stat';
+  d.textContent = 'Collected: ' + owned + ' / ' + arr.length + ' slots';
+  el.appendChild(d);
+}
+
+function getFilteredRows() {
+  if (cachedRowsExp !== currentExpKey || !cachedRows) {
+    cachedRows = buildCardRows(currentExpKey);
+    cachedRowsExp = currentExpKey;
+  }
+  var search = (document.getElementById('c-search') ? document.getElementById('c-search').value.toLowerCase() : '');
+  var rarity  = document.getElementById('c-rarity') ? document.getElementById('c-rarity').value : '';
+  var foilO   = document.getElementById('c-foil')   ? document.getElementById('c-foil').checked : false;
+  var ownedO  = document.getElementById('c-owned')  ? document.getElementById('c-owned').checked : false;
+  return cachedRows.filter(function(r) {
+    if (search) {
+      var wn = cardWikiName(currentExpKey, r).toLowerCase();
+      var cn = (r.name || '').toLowerCase();
+      if (wn.indexOf(search) === -1 && cn.indexOf(search) === -1) return false;
+    }
+    if (rarity !== '' && String(r.borderType) !== rarity) return false;
+    if (foilO && !r.isFoil) return false;
+    if (ownedO && r.copies <= 0) return false;
+    return true;
+  });
+}
+
+function renderCards() {
+  if (!saveData) return;
+  document.getElementById('c-nodata').style.display = 'none';
+  document.getElementById('c-form').style.display = 'block';
+  updateCardsStats();
+
+  var rows = getFilteredRows();
+  var total = rows.length;
+  var pages = Math.max(1, Math.ceil(total / CARDS_PER_PAGE));
+  if (cardPage >= pages) cardPage = pages - 1;
+  var slice = rows.slice(cardPage * CARDS_PER_PAGE, (cardPage+1) * CARDS_PER_PAGE);
+
+  var tbody = document.getElementById('c-tbody');
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+  slice.forEach(function(row) {
+    var tr = document.createElement('tr');
+
+    var tdSi = document.createElement('td');
+    tdSi.textContent = row.si;
+    tr.appendChild(tdSi);
+
+    var tdName = document.createElement('td');
+    (function(r){
+      var imgUrl = cardImageUrl(currentExpKey, r);
+      var wikiName = cardWikiName(currentExpKey, r);
+      // Solid background per Ghost variant (avoids edge artifacts from the BG image):
+      // light for Ghost (white), dark for Ghost Black.
+      var ghostBg = (currentExpKey === 'ghost') ? '#f1f5f9'
+                  : (currentExpKey === 'ghostblack') ? '#0b0b0f' : '';
+      var wrap = document.createElement('div');
+      wrap.style.display = 'flex';
+      wrap.style.alignItems = 'center';
+      wrap.style.gap = '10px';
+
+      if (imgUrl) {
+        // Thumbnail container. For Ghost sets, place the monster art over the
+        // correct card background (white for 'ghost', black for 'ghostblack').
+        var box = document.createElement('div');
+        box.style.width = '34px';
+        box.style.height = '42px';
+        box.style.borderRadius = '4px';
+        box.style.border = '1px solid var(--border)';
+        box.style.flex = '0 0 auto';
+        box.style.cursor = 'zoom-in';
+        box.style.position = 'relative';
+        box.style.overflow = 'hidden';
+        box.style.background = ghostBg ? ghostBg : '#000';
+
+        var thumb = document.createElement('img');
+        thumb.src = imgUrl;
+        thumb.alt = wikiName || r.name;
+        thumb.loading = 'lazy';
+        thumb.style.position = 'absolute';
+        thumb.style.inset = '0';
+        thumb.style.width = '100%';
+        thumb.style.height = '100%';
+        thumb.style.objectFit = ghostBg ? 'contain' : 'cover';
+        thumb.onerror = function(){ this.style.display = 'none'; };
+        box.appendChild(thumb);
+
+        // Click to preview the full card image in a new tab
+        box.addEventListener('click', function(){ window.open(imgUrl, '_blank'); });
+        wrap.appendChild(box);
+      }
+
+      var names = document.createElement('div');
+      names.style.display = 'flex';
+      names.style.flexDirection = 'column';
+      names.style.lineHeight = '1.2';
+      var primary = document.createElement('span');
+      primary.style.fontWeight = '600';
+      primary.textContent = wikiName || r.name;   // prefer wiki display name
+      names.appendChild(primary);
+      // Show the variant (White/Black) for Ghost sets, or the internal codename otherwise
+      var subText = '';
+      if (currentExpKey === 'ghost') subText = 'Ghost · White BG';
+      else if (currentExpKey === 'ghostblack') subText = 'Ghost · Black BG';
+      else if (wikiName && r.name && wikiName !== r.name) subText = r.name;
+      if (subText) {
+        var sub = document.createElement('span');
+        sub.textContent = subText;
+        sub.style.fontSize = '11px';
+        sub.style.color = 'var(--muted)';
+        names.appendChild(sub);
+      }
+      wrap.appendChild(names);
+      tdName.appendChild(wrap);
+    })(row);
+    tr.appendChild(tdName);
+
+    var tdBorder = document.createElement('td');
+    tdBorder.className = BORDER_CLASSES[row.borderType] || '';
+    tdBorder.textContent = BORDER_NAMES[row.borderType] || 'Border' + row.borderType;
+    tr.appendChild(tdBorder);
+
+    var tdFoil = document.createElement('td');
+    if (row.isFoil) {
+      var foilSpan = document.createElement('span');
+      foilSpan.className = 'foil-badge';
+      foilSpan.textContent = 'FOIL';
+      tdFoil.appendChild(foilSpan);
+    }
+    tr.appendChild(tdFoil);
+
+    var tdCopies = document.createElement('td');
+    var inpCopies = document.createElement('input');
+    inpCopies.type = 'number'; inpCopies.min = '0'; inpCopies.value = row.copies;
+    (function(r) {
+      inpCopies.addEventListener('change', function() {
+        var v = parseInt(this.value) || 0;
+        ensureCardArrays(currentExpKey);
+        saveData[ck(currentExpKey)][r.si] = v;
+        saveData[ick(currentExpKey)][r.si] = v > 0;
+        r.copies = v;
+        r.isColl = v > 0;
+        var cbInRow = this.closest('tr').querySelector('input[type=checkbox]');
+        if (cbInRow) cbInRow.checked = v > 0;
+        cachedRows = null; cachedRowsExp = null;
+        markChanged();
+        updateCardsStats();
+      });
+    })(row);
+    tdCopies.appendChild(inpCopies);
+    tr.appendChild(tdCopies);
+
+    var tdColl = document.createElement('td');
+    var cbColl = document.createElement('input');
+    cbColl.type = 'checkbox'; cbColl.checked = row.isColl;
+    (function(r) {
+      cbColl.addEventListener('change', function() {
+        ensureCardArrays(currentExpKey);
+        saveData[ick(currentExpKey)][r.si] = this.checked;
+        r.isColl = this.checked;
+        cachedRows = null; cachedRowsExp = null;
+        markChanged();
+        updateCardsStats();
+      });
+    })(row);
+    tdColl.appendChild(cbColl);
+    tr.appendChild(tdColl);
+
+    var tdSell = document.createElement('td');
+    var inpSell = document.createElement('input');
+    inpSell.type = 'number'; inpSell.min = '0'; inpSell.step = '0.01'; inpSell.value = row.sellP.toFixed(2);
+    (function(r) {
+      inpSell.addEventListener('change', function() {
+        var v = parseFloat(this.value) || 0;
+        ensureCardArrays(currentExpKey);
+        saveData[pk(currentExpKey)][r.si] = v;
+        r.sellP = v;
+        markChanged();
+      });
+    })(row);
+    tdSell.appendChild(inpSell);
+    tr.appendChild(tdSell);
+
+    var tdMkt = document.createElement('td');
+    var inpMkt = document.createElement('input');
+    inpMkt.type = 'number'; inpMkt.min = '0'; inpMkt.step = '0.01'; inpMkt.value = row.mktP.toFixed(2);
+    (function(r) {
+      inpMkt.addEventListener('change', function() {
+        var v = parseFloat(this.value) || 0;
+        ensureCardArrays(currentExpKey);
+        var mktArr = saveData[mk(currentExpKey)];
+        if (!mktArr[r.si] || typeof mktArr[r.si] !== 'object') {
+          mktArr[r.si] = {generatedMarketPrice:0,pricePercentChangeList:0,pastPricePercentChangeList:[]};
+        }
+        mktArr[r.si].generatedMarketPrice = v;
+        r.mktP = v;
+        markChanged();
+      });
+    })(row);
+    tdMkt.appendChild(inpMkt);
+    tr.appendChild(tdMkt);
+
+    tbody.appendChild(tr);
+  });
+
+  var pageInfo = document.getElementById('c-page-info');
+  if (pageInfo) pageInfo.textContent = 'Page ' + (cardPage+1) + ' of ' + pages + ' (' + total + ' results)';
+}
+
+(function() {
+  var bound = false;
+  function bindFilters() {
+    if (bound) return; bound = true;['c-search','c-rarity','c-foil','c-owned'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('change', function(){ cardPage=0; renderCards(); });
+      if (el && el.tagName === 'INPUT' && el.type === 'text') el.addEventListener('input', function(){ cardPage=0; renderCards(); });
+    });
+  }
+  document.addEventListener('DOMContentLoaded', bindFilters);
+  setTimeout(bindFilters, 100);
+})();
+
+function cardPrev() { if (cardPage > 0) { cardPage--; renderCards(); } }
+function cardNext() {
+  var rows = getFilteredRows();
+  var pages = Math.ceil(rows.length / CARDS_PER_PAGE);
+  if (cardPage < pages-1) { cardPage++; renderCards(); }
+}
+
+function bulkUnlockAll() {
+  if (!saveData) return;
+  ensureCardArrays(currentExpKey);
+  var rows = buildCardRows(currentExpKey);
+  rows.forEach(function(r) {
+    saveData[ck(currentExpKey)][r.si] = Math.max(saveData[ck(currentExpKey)][r.si]||0, 1);
+    saveData[ick(currentExpKey)][r.si] = true;
+  });
+  cachedRows=null; cachedRowsExp=null; markChanged(); renderCards(); updateCardsStats();
+}
+function bulkSetCopies() {
+  if (!saveData) return;
+  var v = parseInt(document.getElementById('bulk-copies').value) || 1;
+  ensureCardArrays(currentExpKey);
+  buildCardRows(currentExpKey).forEach(function(r) {
+    saveData[ck(currentExpKey)][r.si] = v;
+    saveData[ick(currentExpKey)][r.si] = v > 0;
+  });
+  cachedRows=null; cachedRowsExp=null; markChanged(); renderCards(); updateCardsStats();
+}
+function bulkClearCopies() {
+  if (!saveData) return;
+  ensureCardArrays(currentExpKey);
+  buildCardRows(currentExpKey).forEach(function(r) {
+    saveData[ck(currentExpKey)][r.si] = 0;
+    saveData[ick(currentExpKey)][r.si] = false;
+  });
+  cachedRows=null; cachedRowsExp=null; markChanged(); renderCards(); updateCardsStats();
+}
+function bulkSetPrice() {
+  if (!saveData) return;
+  var v = parseFloat(document.getElementById('bulk-price').value) || 0;
+  ensureCardArrays(currentExpKey);
+  buildCardRows(currentExpKey).forEach(function(r) { saveData[pk(currentExpKey)][r.si] = v; });
+  cachedRows=null; cachedRowsExp=null; markChanged(); renderCards();
+}
+function bulkSetMarket() {
+  if (!saveData) return;
+  var v = parseFloat(document.getElementById('bulk-market').value) || 0;
+  ensureCardArrays(currentExpKey);
+  var mktArr = saveData[mk(currentExpKey)];
+  buildCardRows(currentExpKey).forEach(function(r) {
+    if (!mktArr[r.si]||typeof mktArr[r.si]!=='object') mktArr[r.si]={generatedMarketPrice:0,pricePercentChangeList:0,pastPricePercentChangeList:[]};
+    mktArr[r.si].generatedMarketPrice = v;
+  });
+  cachedRows=null; cachedRowsExp=null; markChanged(); renderCards();
+}
+
+// ========================================================
+// TAB 2: ITEMS
+// ========================================================
+function ensureItemArrays() {
+  var defs = {m_CurrentTotalItemCountList:500, m_SetItemPriceList:500, m_GeneratedCostPriceList:500, m_GeneratedMarketPriceList:500};
+  Object.keys(defs).forEach(function(k) {
+    if (!Array.isArray(saveData[k])) saveData[k] =[];
+    while (saveData[k].length < defs[k]) saveData[k].push(0);
+  });
+  if (!Array.isArray(saveData.m_IsItemLicenseUnlocked)) saveData.m_IsItemLicenseUnlocked =[];
+  while (saveData.m_IsItemLicenseUnlocked.length < 501) saveData.m_IsItemLicenseUnlocked.push(false);
+}
+
+(function(){
+  var bound = false;
+  function bindItemFilters() {
+    if (bound) return; bound = true;
+    var el = document.getElementById('i-search');
+    if (el) { el.addEventListener('input', function(){ itemPage=0; renderItems(); }); }
+  }
+  document.addEventListener('DOMContentLoaded', bindItemFilters);
+  setTimeout(bindItemFilters, 100);
+})();
+
+function renderItems() {
+  if (!saveData) return;
+  document.getElementById('i-nodata').style.display = 'none';
+  document.getElementById('i-form').style.display = 'block';
+  ensureItemArrays();
+
+  var search = (document.getElementById('i-search') ? document.getElementById('i-search').value : '');
+  var indices =[];
+  for (var i = 0; i < 500; i++) {
+    if (!search || String(i).indexOf(search) !== -1) indices.push(i);
+  }
+  var total = indices.length;
+  var pages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
+  if (itemPage >= pages) itemPage = pages-1;
+  var slice = indices.slice(itemPage * ITEMS_PER_PAGE, (itemPage+1) * ITEMS_PER_PAGE);
+
+  var tbody = document.getElementById('i-tbody');
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+  slice.forEach(function(i) {
+    var tr = document.createElement('tr');
+
+    var tdIdx = document.createElement('td');
+    var strong = document.createElement('strong');
+    strong.textContent = 'Item #' + i;
+    tdIdx.appendChild(strong);
+    tr.appendChild(tdIdx);
+
+    var tdStock = document.createElement('td');
+    var inpStock = document.createElement('input');
+    inpStock.type = 'number'; inpStock.min = '0'; inpStock.value = saveData.m_CurrentTotalItemCountList[i] || 0;
+    (function(idx){ inpStock.addEventListener('change', function(){ saveData.m_CurrentTotalItemCountList[idx]=parseInt(this.value)||0; markChanged(); }); })(i);
+    tdStock.appendChild(inpStock); tr.appendChild(tdStock);
+
+    var tdSell = document.createElement('td');
+    var inpSell = document.createElement('input');
+    inpSell.type = 'number'; inpSell.min = '0'; inpSell.step = '0.01'; inpSell.value = (saveData.m_SetItemPriceList[i]||0).toFixed(2);
+    (function(idx){ inpSell.addEventListener('change', function(){ saveData.m_SetItemPriceList[idx]=parseFloat(this.value)||0; markChanged(); }); })(i);
+    tdSell.appendChild(inpSell); tr.appendChild(tdSell);
+
+    var tdCost = document.createElement('td');
+    var costSpan = document.createElement('span');
+    costSpan.style.color = 'var(--muted)';
+    costSpan.textContent = (saveData.m_GeneratedCostPriceList[i]||0).toFixed(2);
+    tdCost.appendChild(costSpan); tr.appendChild(tdCost);
+
+    var tdMkt = document.createElement('td');
+    var inpMkt = document.createElement('input');
+    inpMkt.type = 'number'; inpMkt.min = '0'; inpMkt.step = '0.01'; inpMkt.value = (saveData.m_GeneratedMarketPriceList[i]||0).toFixed(2);
+    (function(idx){ inpMkt.addEventListener('change', function(){ saveData.m_GeneratedMarketPriceList[idx]=parseFloat(this.value)||0; markChanged(); }); })(i);
+    tdMkt.appendChild(inpMkt); tr.appendChild(tdMkt);
+
+    var tdLic = document.createElement('td');
+    var cbLic = document.createElement('input');
+    cbLic.type = 'checkbox'; cbLic.checked = !!(i < 501 && saveData.m_IsItemLicenseUnlocked[i]);
+    (function(idx){ cbLic.addEventListener('change', function(){ saveData.m_IsItemLicenseUnlocked[idx]=this.checked; markChanged(); }); })(i);
+    tdLic.appendChild(cbLic); tr.appendChild(tdLic);
+
+    tbody.appendChild(tr);
+  });
+
+  var pi = document.getElementById('i-page-info');
+  if (pi) pi.textContent = 'Page ' + (itemPage+1) + ' of ' + pages + ' (' + total + ' items)';
+}
+
+function itemPrev() { if (itemPage > 0) { itemPage--; renderItems(); } }
+function itemNext() {
+  var search = document.getElementById('i-search') ? document.getElementById('i-search').value : '';
+  var total = 0;
+  for (var i=0;i<500;i++) if (!search||String(i).indexOf(search)!==-1) total++;
+  var pages = Math.ceil(total/ITEMS_PER_PAGE);
+  if (itemPage < pages-1) { itemPage++; renderItems(); }
+}
+
+function bulkUnlockLicenses() {
+  if (!saveData) return; ensureItemArrays();
+  for (var i=0;i<501;i++) saveData.m_IsItemLicenseUnlocked[i]=true;
+  markChanged(); renderItems();
+}
+function bulkSetStock() {
+  if (!saveData) return; ensureItemArrays();
+  var v = parseInt(document.getElementById('bulk-stock').value)||0;
+  for (var i=0;i<500;i++) saveData.m_CurrentTotalItemCountList[i]=v;
+  markChanged(); renderItems();
+}
+function bulkClearItemPrices() {
+  if (!saveData) return; ensureItemArrays();
+  for (var i=0;i<500;i++) { saveData.m_SetItemPriceList[i]=0; saveData.m_GeneratedMarketPriceList[i]=0; }
+  markChanged(); renderItems();
+}
+
+// ========================================================
+// TAB 3: WORKERS
+// ========================================================
+function makeDefaultWorker() {
+  return {primaryTask:0,secondaryTask:0,workerTask:0,currentState:0,pos:{x:0,y:0,z:0},rot:{x:0,y:0,z:0,w:1},
+    isFillShelfWithoutLabel:false,isRoundUpPrice:false,isRoundUpCardPrice:false,
+    isAvoidSetCardPrice:false,isAvoidSetCardPriceWhileRestock:false,
+    isGoingHome:false,isBonusBoosted:false,bonusBoostedCount:0,
+    setPriceMultiplier:1.0,setCardPriceMultiplier:1.0,
+    cardPackItemTypeEnabledList:[true,true,true,true,true,true,true,true],
+    expList:new Array(100).fill(0)};
+}
+
+function renderWorkers() {
+  if (!saveData) return;
+  document.getElementById('w-nodata').style.display = 'none';
+  document.getElementById('w-form').style.display = 'block';
+  if (!Array.isArray(saveData.m_WorkerSaveDataList)) saveData.m_WorkerSaveDataList =[];
+  while (saveData.m_WorkerSaveDataList.length < 9) saveData.m_WorkerSaveDataList.push(makeDefaultWorker());
+  if (!Array.isArray(saveData.m_IsWorkerHired)) saveData.m_IsWorkerHired =[];
+  while (saveData.m_IsWorkerHired.length < 100) saveData.m_IsWorkerHired.push(false);
+
+  var grid = document.getElementById('w-grid');
+  while (grid.firstChild) grid.removeChild(grid.firstChild);
+  for (var i = 0; i < 9; i++) grid.appendChild(buildWorkerCard(i));
+}
+
+function buildWorkerCard(i) {
+  var w = saveData.m_WorkerSaveDataList[i];
+  var hired = !!(saveData.m_IsWorkerHired[i]);
+  if (!Array.isArray(w.cardPackItemTypeEnabledList)) w.cardPackItemTypeEnabledList = new Array(8).fill(true);
+  while (w.cardPackItemTypeEnabledList.length < 8) w.cardPackItemTypeEnabledList.push(true);
+  if (!Array.isArray(w.expList)) w.expList = new Array(100).fill(0);
+  while (w.expList.length < 100) w.expList.push(0);
+  var totalExp = w.expList.reduce(function(a,b){return a+b;},0);
+
+  var div = document.createElement('div');
+  div.className = 'worker-card' + (hired ? ' hired' : '');
+  div.id = 'wcard-' + i;
+
+  var info = WORKER_INFO[i] || null;
+
+  // Header: photo + name + hired/available status
+  var h3 = document.createElement('h3');
+  h3.style.cssText = 'font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:12px;';
+
+  if (info) {
+    var photo = document.createElement('img');
+    photo.src = workerImgUrl(i);
+    photo.alt = info.name;
+    photo.loading = 'lazy';
+    photo.style.cssText = 'width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--border);background:#000;flex:0 0 auto;';
+    photo.onerror = function(){ this.style.display = 'none'; };
+    h3.appendChild(photo);
+  }
+
+  var titleWrap = document.createElement('div');
+  titleWrap.style.cssText = 'display:flex;flex-direction:column;flex:1 1 auto;gap:2px;';
+  var titleText = document.createElement('span');
+  titleText.textContent = info ? info.name : ('Worker ' + (i + 1));
+  titleWrap.appendChild(titleText);
+  if (info) {
+    var subInfo = document.createElement('span');
+    subInfo.style.cssText = 'font-size:11px;color:var(--muted);font-weight:500;';
+    subInfo.textContent = 'Slot ' + (i + 1) + ' · Unlocks at Lv.' + info.level;
+    titleWrap.appendChild(subInfo);
+  }
+  h3.appendChild(titleWrap);
+
+  var statusSpan = document.createElement('span');
+  statusSpan.style.cssText = hired ? 'color:var(--green);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(16,185,129,0.15);padding:4px 8px;border-radius:4px;flex:0 0 auto;' : 'color:var(--muted);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;background:rgba(255,255,255,0.05);padding:4px 8px;border-radius:4px;flex:0 0 auto;';
+  statusSpan.textContent = hired ? '● Hired' : '○ Available';
+  h3.appendChild(statusSpan);
+  div.appendChild(h3);
+
+  // Stat grid from the wiki (restock/checkout speed, hiring fee, salary)
+  if (info) {
+    var statWrap = document.createElement('div');
+    statWrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12px;margin-bottom:16px;padding:12px;background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);';
+    var stats = [
+      ['Restock Speed', info.restock],
+      ['Checkout Speed', info.checkout],
+      ['Hiring Fee', '$' + info.fee.toLocaleString('en-US')],
+      ['Daily Salary', '$' + info.salary.toLocaleString('en-US')]
+    ];
+    stats.forEach(function(s){
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;gap:8px;';
+      var k = document.createElement('span'); k.style.color = 'var(--muted)'; k.textContent = s[0];
+      var v = document.createElement('span'); v.style.color = 'var(--text)'; v.style.fontWeight = '600'; v.textContent = s[1];
+      row.appendChild(k); row.appendChild(v);
+      statWrap.appendChild(row);
+    });
+    div.appendChild(statWrap);
+  }
+
+  var hiredRow = document.createElement('div');
+  hiredRow.className = 'wrow';
+  hiredRow.style.borderBottom = '1px solid var(--border)';
+  hiredRow.style.paddingBottom = '16px';
+  hiredRow.style.marginBottom = '20px';
+  var hiredLabel = document.createElement('label');
+  hiredLabel.textContent = 'Employ Worker:';
+  hiredRow.appendChild(hiredLabel);
+  var hiredCb = document.createElement('input');
+  hiredCb.type = 'checkbox';
+  hiredCb.checked = hired;
+  (function(idx){ hiredCb.addEventListener('change', function(){ setWorkerHired(idx, this.checked); }); })(i);
+  hiredRow.appendChild(hiredCb);
+  div.appendChild(hiredRow);
+
+  if (hired) {
+    var details = document.createElement('div');
+
+    details.appendChild(makeWorkerNumberRow(i, 'setPriceMultiplier', 'Price Multiplier:', w.setPriceMultiplier || 1));
+    details.appendChild(makeWorkerNumberRow(i, 'setCardPriceMultiplier', 'Card Price Multiplier:', w.setCardPriceMultiplier || 1));
+
+    var flags = [
+      ['isFillShelfWithoutLabel','Fill Without Label'],['isRoundUpPrice','Round Up Price'],
+      ['isRoundUpCardPrice','Round Up Card Price'],['isAvoidSetCardPrice','Avoid Set Card Price'],['isAvoidSetCardPriceWhileRestock','Avoid Set Card Price (Restock)']
+    ];
+    flags.forEach(function(pair) {
+      details.appendChild(makeWorkerCheckRow(i, pair[0], pair[1], w[pair[0]]));
+    });
+
+    var packLabel = document.createElement('div');
+    packLabel.style.cssText = 'font-size:12px;color:var(--text);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:16px;';
+    packLabel.textContent = 'Enabled Pack Types';
+    details.appendChild(packLabel);
+    
+    var packGrid = document.createElement('div');
+    packGrid.className = 'pack-grid';
+    for (var p = 0; p < 8; p++) {
+      var pItem = document.createElement('div');
+      pItem.className = 'pack-item';
+      var pCb = document.createElement('input');
+      pCb.type = 'checkbox';
+      pCb.checked = !!(w.cardPackItemTypeEnabledList[p]);
+      (function(wi, pi){ pCb.addEventListener('change', function(){ saveData.m_WorkerSaveDataList[wi].cardPackItemTypeEnabledList[pi]=this.checked; markChanged(); }); })(i, p);
+      var pSpan = document.createElement('span');
+      pSpan.textContent = 'Pack ' + (p+1);
+      pItem.appendChild(pCb);
+      pItem.appendChild(pSpan);
+      packGrid.appendChild(pItem);
+    }
+    details.appendChild(packGrid);
+
+    var expRow = document.createElement('div');
+    expRow.className = 'wrow';
+    expRow.style.marginTop = '20px';
+    var expLabel = document.createElement('label');
+    expLabel.textContent = 'Total EXP:';
+    expRow.appendChild(expLabel);
+    var expSpan = document.createElement('span');
+    expSpan.style.color = 'var(--cyan)';
+    expSpan.style.fontWeight = '700';
+    expSpan.style.fontSize = '16px';
+    expSpan.textContent = totalExp.toLocaleString();
+    expRow.appendChild(expSpan);
+    details.appendChild(expRow);
+
+    var btnRow = document.createElement('div');
+    btnRow.style.display = 'flex';
+    btnRow.style.gap = '8px';
+    btnRow.style.marginTop = '12px';
+    var maxBtn = document.createElement('button');
+    maxBtn.className = 'btn btn-g btn-sm';
+    maxBtn.style.flex = '1';
+    maxBtn.textContent = 'Max EXP';
+    (function(idx){ maxBtn.addEventListener('click', function(){ maxWorkerExp(idx); }); })(i);
+    var resetBtn = document.createElement('button');
+    resetBtn.className = 'btn btn-gray btn-sm';
+    resetBtn.style.flex = '1';
+    resetBtn.textContent = 'Reset EXP';
+    (function(idx){ resetBtn.addEventListener('click', function(){ resetWorkerExp(idx); }); })(i);
+    btnRow.appendChild(maxBtn);
+    btnRow.appendChild(resetBtn);
+    details.appendChild(btnRow);
+
+    div.appendChild(details);
+  }
+  return div;
+}
+
+function makeWorkerNumberRow(wi, field, labelText, val) {
+  var row = document.createElement('div');
+  row.className = 'wrow';
+  row.style.justifyContent = 'space-between';
+  var label = document.createElement('label');
+  label.textContent = labelText;
+  row.appendChild(label);
+  var inp = document.createElement('input');
+  inp.type = 'number';
+  inp.step = '0.01';
+  inp.value = val.toFixed ? val.toFixed(2) : val;
+  (function(i, f){ inp.addEventListener('change', function(){ saveData.m_WorkerSaveDataList[i][f]=parseFloat(this.value)||1; markChanged(); }); })(wi, field);
+  row.appendChild(inp);
+  return row;
+}
+function makeWorkerCheckRow(wi, field, labelText, val) {
+  var row = document.createElement('div');
+  row.className = 'wrow';
+  row.style.justifyContent = 'space-between';
+  var label = document.createElement('label');
+  label.textContent = labelText;
+  row.appendChild(label);
+  var cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.checked = !!val;
+  (function(i, f){ cb.addEventListener('change', function(){ saveData.m_WorkerSaveDataList[i][f]=this.checked; markChanged(); }); })(wi, field);
+  row.appendChild(cb);
+  return row;
+}
+
+function setWorkerHired(i, val) {
+  saveData.m_IsWorkerHired[i] = val;
+  markChanged();
+  var old = document.getElementById('wcard-' + i);
+  if (old && old.parentNode) old.parentNode.replaceChild(buildWorkerCard(i), old);
+}
+function maxWorkerExp(i) {
+  saveData.m_WorkerSaveDataList[i].expList = new Array(100).fill(9999);
+  markChanged();
+  var old = document.getElementById('wcard-' + i);
+  if (old && old.parentNode) old.parentNode.replaceChild(buildWorkerCard(i), old);
+}
+function resetWorkerExp(i) {
+  saveData.m_WorkerSaveDataList[i].expList = new Array(100).fill(0);
+  markChanged();
+  var old = document.getElementById('wcard-' + i);
+  if (old && old.parentNode) old.parentNode.replaceChild(buildWorkerCard(i), old);
+}
+
+// ========================================================
+// TAB 4: GRADING
+// ========================================================
+function getCardDisplayName(cardData) {
+  var et = cardData.expansionType;
+  var mt = cardData.monsterType;
+  var bt = cardData.borderType || 0;
+  var foil = cardData.isFoil;
+  var dest = cardData.isDestiny;
+  var expName, monName;
+  if (et === 0) {
+    expName = dest ? 'Destiny' : 'Tetramon';
+    monName = TETRAMON_NAMES[mt] || ('Mon#'+mt);
+  } else if (et === 1) {
+    expName = 'Megabot';
+    monName = MEGABOT_NAMES[mt] || ('Bot#'+mt);
+  } else if (et === 2) {
+    expName = dest ? 'Ghost Black' : 'Ghost';
+    monName = 'Ghost Card #' + mt;
+  } else if (et === 3) {
+    expName = 'Fantasy RPG';
+    monName = FANTASYRPG_NAMES[mt] || ('Hero#'+mt);
+  } else if (et === 4) {
+    expName = 'Cat Job';
+    monName = CATJOB_NAMES[mt] || ('Cat#'+mt);
+  } else {
+    expName = 'Expansion' + et;
+    monName = 'Mon#' + mt;
+  }
+  var borderName = BORDER_NAMES[bt] || ('Border'+bt);
+  return expName + ' - ' + monName + '[' + borderName + (foil ? ' Foil' : '') + ']';
+}
+
+function renderGrading() {
+  if (!saveData) return;
+  document.getElementById('g-nodata').style.display = 'none';
+  document.getElementById('g-form').style.display = 'block';
+
+  // In-progress
+  var ipList = Array.isArray(saveData.m_GradeCardInProgressList) ? saveData.m_GradeCardInProgressList :[];
+  var ipDiv = document.getElementById('g-inprogress');
+  while (ipDiv.firstChild) ipDiv.removeChild(ipDiv.firstChild);
+  if (ipList.length === 0) {
+    var nd = document.createElement('div');
+    nd.className = 'no-data';
+    nd.textContent = 'No batches currently in progress.';
+    ipDiv.appendChild(nd);
+  } else {
+    ipList.forEach(function(batch, idx) { ipDiv.appendChild(buildGradingBatch(batch, idx, 'inprogress')); });
+  }
+
+  // Pending
+  var pending = saveData.m_CurrentGradeCardSubmitSet;
+  var pDiv = document.getElementById('g-pending');
+  while (pDiv.firstChild) pDiv.removeChild(pDiv.firstChild);
+  if (!pending || !Array.isArray(pending.m_CardDataList) || pending.m_CardDataList.length === 0) {
+    var nd2 = document.createElement('div');
+    nd2.className = 'no-data';
+    nd2.textContent = 'No pending submission.';
+    pDiv.appendChild(nd2);
+  } else {
+    pDiv.appendChild(buildGradingBatch(pending, 0, 'pending'));
+  }
+
+  // Completed
+  var completed = Array.isArray(saveData.m_GradedCardInventoryList) ? saveData.m_GradedCardInventoryList :[];
+  document.getElementById('g-count').textContent = completed.length;
+  var cDiv = document.getElementById('g-completed');
+  while (cDiv.firstChild) cDiv.removeChild(cDiv.firstChild);
+  if (completed.length === 0) {
+    var nd3 = document.createElement('div');
+    nd3.className = 'no-data';
+    nd3.textContent = 'No completed graded cards in inventory.';
+    cDiv.appendChild(nd3);
+  } else {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'max-height:400px;overflow-y:auto;padding-right:8px;display:flex;flex-direction:column;gap:8px;';
+    completed.forEach(function(card, idx) {
+      var chip = document.createElement('div');
+      chip.className = 'g-chip';
+      var grade = card.cardGrade !== undefined ? ' | Grade: <span style="color:var(--gold);font-weight:700">' + card.cardGrade + '</span>' : '';
+      chip.innerHTML = '<span style="color:var(--muted)">#' + (idx+1) + '</span> - ' + getCardDisplayName(card) + grade;
+      wrap.appendChild(chip);
+    });
+    cDiv.appendChild(wrap);
+  }
+}
+
+function buildGradingBatch(batch, idx, type) {
+  var div = document.createElement('div');
+  div.className = 'grading-batch';
+
+  var svcIdx = batch.m_ServiceLevel !== undefined ? batch.m_ServiceLevel : 0;
+  var svcLabel = SVC_LABELS[svcIdx] || 'Unknown';
+  var daysPassed = batch.m_DayPassed || 0;
+  var cards = Array.isArray(batch.m_CardDataList) ? batch.m_CardDataList :[];
+
+  var h4 = document.createElement('h4');
+  h4.style.cssText = 'font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:12px;';
+  var h4Text = document.createElement('span');
+  h4Text.textContent = 'Batch #' + (idx+1);
+  h4.appendChild(h4Text);
+  
+  var dot = document.createElement('span');
+  dot.style.color = 'var(--muted)';
+  dot.textContent = '•';
+  h4.appendChild(dot);
+  
+  var svcSpan = document.createElement('span');
+  svcSpan.className = 'svc-' + svcIdx;
+  svcSpan.textContent = svcLabel + ' Service';
+  h4.appendChild(svcSpan);
+  
+  if (type === 'inprogress') {
+    var dot2 = document.createElement('span');
+    dot2.style.color = 'var(--muted)';
+    dot2.textContent = '•';
+    h4.appendChild(dot2);
+    var dayText = document.createElement('span');
+    dayText.style.color = 'var(--text)';
+    dayText.textContent = 'Days Passed: ' + daysPassed;
+    h4.appendChild(dayText);
+  }
+  div.appendChild(h4);
+
+  var cardsDiv = document.createElement('div');
+  cardsDiv.className = 'grading-cards';
+  cards.forEach(function(c) {
+    var chip = document.createElement('div');
+    chip.className = 'g-chip';
+    chip.textContent = getCardDisplayName(c);
+    cardsDiv.appendChild(chip);
+  });
+  div.appendChild(cardsDiv);
+
+  if (type === 'inprogress') {
+    var actDiv = document.createElement('div');
+    actDiv.className = 'grading-actions';
+
+    var completeBtn = document.createElement('button');
+    completeBtn.className = 'btn btn-g btn-sm';
+    completeBtn.textContent = 'Complete Now';
+    (function(i){ completeBtn.addEventListener('click', function(){ completeBatch(i); }); })(idx);
+    actDiv.appendChild(completeBtn);
+
+    var skipLabel = document.createElement('span');
+    skipLabel.style.cssText = 'color:var(--muted);font-size:13px;margin-left:16px;font-weight:600;';
+    skipLabel.textContent = 'Fast Forward:';
+    actDiv.appendChild(skipLabel);
+
+    var skipInp = document.createElement('input');
+    skipInp.type = 'number';
+    skipInp.min = '1';
+    skipInp.value = '7';
+    skipInp.id = 'skip-' + idx;
+    actDiv.appendChild(skipInp);
+
+    var skipBtn = document.createElement('button');
+    skipBtn.className = 'btn btn-gray btn-sm';
+    skipBtn.textContent = 'Add Days';
+    (function(i){ skipBtn.addEventListener('click', function(){ skipBatchDays(i); }); })(idx);
+    actDiv.appendChild(skipBtn);
+
+    div.appendChild(actDiv);
+  }
+  return div;
+}
+
+function completeBatch(idx) {
+  if (!saveData || !Array.isArray(saveData.m_GradeCardInProgressList)) return;
+  saveData.m_GradeCardInProgressList[idx].m_DayPassed = 9999;
+  markChanged(); renderGrading();
+}
+function skipBatchDays(idx) {
+  if (!saveData || !Array.isArray(saveData.m_GradeCardInProgressList)) return;
+  var inp = document.getElementById('skip-' + idx);
+  var n = inp ? (parseInt(inp.value)||0) : 0;
+  saveData.m_GradeCardInProgressList[idx].m_DayPassed = (saveData.m_GradeCardInProgressList[idx].m_DayPassed||0) + n;
+  markChanged(); renderGrading();
+}
+function completeAllBatches() {
+  if (!saveData || !Array.isArray(saveData.m_GradeCardInProgressList)) return;
+  saveData.m_GradeCardInProgressList.forEach(function(b){ b.m_DayPassed = 9999; });
+  markChanged(); renderGrading();
+}
+
+// ========================================================
+// TAB 6: REVIEWS
+// customerReviewType values observed in saves (best-effort labels).
+// ========================================================
+var REVIEW_TYPE_LABELS = {
+  0:'General', 1:'Item Quality', 2:'Price', 3:'Service', 4:'Cleanliness',
+  5:'Atmosphere', 6:'Staff', 7:'Complaint', 8:'Wait Time', 9:'Stock',
+  10:'Play Area', 11:'Other'
+};
+
+// Compute the average of the stored reviews (the 50 kept in m_CustomerReviewDataList).
+// This is display-only and does NOT overwrite m_CustomerReviewScoreAverage (the
+// all-time total average, which the user edits on the Player tab).
+function computeStoredReviewAverage() {
+  var list = saveData.m_CustomerReviewDataList;
+  if (!Array.isArray(list) || list.length === 0) return 0;
+  var sum = 0, n = 0;
+  list.forEach(function(r){
+    var s = (typeof r.starLevel === 'number') ? r.starLevel : 0;
+    sum += s; n++;
+  });
+  return n ? (sum / n) : 0;
+}
+
+function renderReviews() {
+  if (!saveData) return;
+  var nodata = document.getElementById('rv-nodata');
+  var form = document.getElementById('rv-form');
+  if (!nodata || !form) return;
+  nodata.style.display = 'none';
+  form.style.display = 'block';
+
+  if (!Array.isArray(saveData.m_CustomerReviewDataList)) saveData.m_CustomerReviewDataList = [];
+  var list = saveData.m_CustomerReviewDataList;
+
+  // Summary cards
+  var summary = document.getElementById('rv-summary');
+  if (summary) {
+    while (summary.firstChild) summary.removeChild(summary.firstChild);
+    var stored = computeStoredReviewAverage();
+    var total = (typeof saveData.m_CustomerReviewScoreAverage === 'number') ? saveData.m_CustomerReviewScoreAverage : 0;
+    var chips = [
+      ['Avg of Stored ' + list.length + ' Reviews', (list.length ? stored : 0) + ' ★'],
+      ['Avg Total (all-time)', total + ' ★'],
+      ['Total Review Count', String(saveData.m_CustomerReviewCount || 0)]
+    ];
+    chips.forEach(function(c){
+      var box = document.createElement('div');
+      box.style.cssText = 'background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;min-width:140px;';
+      var k = document.createElement('div'); k.style.cssText='font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;'; k.textContent=c[0];
+      var v = document.createElement('div'); v.style.cssText='font-size:18px;font-weight:800;color:var(--cyan);'; v.textContent=c[1];
+      box.appendChild(k); box.appendChild(v); summary.appendChild(box);
+    });
+  }
+
+  var search = (document.getElementById('rv-search') ? document.getElementById('rv-search').value.toLowerCase() : '');
+  var tbody = document.getElementById('rv-tbody');
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+  list.forEach(function(r, idx) {
+    var name = r.customerName || '(unknown)';
+    if (search && name.toLowerCase().indexOf(search) === -1) return;
+
+    var tr = document.createElement('tr');
+
+    var tdNum = document.createElement('td'); tdNum.textContent = (idx+1); tr.appendChild(tdNum);
+
+    var tdName = document.createElement('td');
+    var inpName = document.createElement('input');
+    inpName.type = 'text'; inpName.value = name; inpName.style.minWidth = '140px';
+    (function(i){ inpName.addEventListener('change', function(){ saveData.m_CustomerReviewDataList[i].customerName = this.value; markChanged(); }); })(idx);
+    tdName.appendChild(inpName); tr.appendChild(tdName);
+
+    // Stars: 1-5 selector with clickable star display
+    var tdStars = document.createElement('td');
+    var starWrap = document.createElement('div');
+    starWrap.style.cssText = 'display:flex;align-items:center;gap:6px;';
+    var starRow = document.createElement('div');
+    starRow.style.cssText = 'font-size:16px;letter-spacing:1px;cursor:pointer;user-select:none;';
+    function paintStars(val){
+      starRow.textContent = '';
+      for (var s=1; s<=5; s++){
+        var span = document.createElement('span');
+        span.textContent = (s <= val) ? '★' : '☆';
+        span.style.color = (s <= val) ? '#fbbf24' : 'var(--muted)';
+        (function(sv){ span.addEventListener('click', function(){ setStar(idx, sv); }); })(s);
+        starRow.appendChild(span);
+      }
+    }
+    function setStar(i, val){
+      saveData.m_CustomerReviewDataList[i].starLevel = val;
+      markChanged();
+      renderReviews(); // refresh summary (stored avg) + this row
+    }
+    paintStars(r.starLevel || 0);
+    starWrap.appendChild(starRow);
+    var numLbl = document.createElement('span');
+    numLbl.textContent = (r.starLevel || 0) + '/5';
+    numLbl.style.cssText = 'font-size:12px;color:var(--muted);';
+    starWrap.appendChild(numLbl);
+    tdStars.appendChild(starWrap); tr.appendChild(tdStars);
+
+    var tdType = document.createElement('td');
+    tdType.style.color = 'var(--muted)'; tdType.style.fontSize = '12px';
+    var t = r.customerReviewType;
+    tdType.textContent = (t === undefined) ? '—' : (REVIEW_TYPE_LABELS[t] || ('Type ' + t));
+    tr.appendChild(tdType);
+
+    var tdWhen = document.createElement('td');
+    tdWhen.style.color = 'var(--muted)'; tdWhen.style.fontSize = '12px';
+    var hh = (r.hour !== undefined) ? String(r.hour).padStart(2,'0') : '--';
+    var mm = (r.minute !== undefined) ? String(r.minute).padStart(2,'0') : '--';
+    tdWhen.textContent = 'Day ' + (r.day !== undefined ? r.day : '?') + ' · ' + hh + ':' + mm;
+    tr.appendChild(tdWhen);
+
+    tbody.appendChild(tr);
+  });
+
+  // Bind search once
+  if (!renderReviews._bound) {
+    renderReviews._bound = true;
+    var se = document.getElementById('rv-search');
+    if (se) se.addEventListener('input', function(){ renderReviews(); });
+  }
+}
+
+function rvSetAllStars(val) {
+  if (!saveData || !Array.isArray(saveData.m_CustomerReviewDataList)) return;
+  saveData.m_CustomerReviewDataList.forEach(function(r){ r.starLevel = val; });
+  markChanged();
+  renderReviews();
+}
+
+// ========================================================
+// TAB 7: SHOP & STATS (Bills, Statistics, Settings, Champion/Tournament)
+// ========================================================
+var BILL_TYPE_LABELS = { 0:'Bill', 1:'Rent', 2:'Electricity', 3:'Water', 4:'Internet', 5:'Tax' };
+
+// 21 all-time metrics with friendly labels and whether they are currency.
+var STAT_FIELDS = [
+  ['customerVisited','Customers Visited',false],
+  ['checkoutCount','Checkouts',false],
+  ['customerDisatisfied','Dissatisfied Customers',false],
+  ['customerBoughtItem','Items Bought by Customers',false],
+  ['customerBoughtCard','Cards Bought by Customers',false],
+  ['customerPlayed','Customers Played',false],
+  ['storeExpGained','Store EXP Gained',false],
+  ['storeLevelGained','Store Levels Gained',false],
+  ['itemAmountSold','Items Sold',false],
+  ['cardAmountSold','Cards Sold',false],
+  ['totalPlayTableTime','Total Play Table Time',false],
+  ['totalItemEarning','Total Item Earnings',true],
+  ['totalCardEarning','Total Card Earnings',true],
+  ['totalPlayTableEarning','Total Play Table Earnings',true],
+  ['supplyCost','Supply Cost',true],
+  ['upgradeCost','Upgrade Cost',true],
+  ['rentCost','Rent Cost',true],
+  ['billCost','Bill Cost',true],
+  ['cardPackOpened','Card Packs Opened',false],
+  ['smellyCustomerCleaned','Smelly Customers Cleaned',false],
+  ['manualCheckoutCount','Manual Checkouts',false]
+];
+
+var SETTING_FIELDS = [
+  ['m_QuickFillMinimumCardLimit','Quick Fill: Min Card Limit'],
+  ['m_QuickFillPriceLimit','Quick Fill: Price Limit'],
+  ['m_QuickFillPriceMinimum','Quick Fill: Price Minimum'],
+  ['m_QuickFillRarityLimit','Quick Fill: Rarity Limit'],
+  ['m_WorkbenchMinimumCardLimit','Workbench: Min Card Limit'],
+  ['m_WorkbenchPriceLimit','Workbench: Price Limit'],
+  ['m_WorkbenchPriceMinimum','Workbench: Price Minimum'],
+  ['m_WorkbenchRarityLimit','Workbench: Rarity Limit'],
+  ['m_DonationQuickFillMinimumCardLimit','Donation: Min Card Limit'],
+  ['m_DonationQuickFillPriceLimit','Donation: Price Limit'],
+  ['m_DonationQuickFillPriceMinimum','Donation: Price Minimum'],
+  ['m_DonationQuickFillRarityLimit','Donation: Rarity Limit']
+];
+
+function renderShopStats() {
+  if (!saveData) return;
+  var nodata = document.getElementById('ss-nodata');
+  var form = document.getElementById('ss-form');
+  if (!nodata || !form) return;
+  nodata.style.display = 'none';
+  form.style.display = 'block';
+
+  // --- Bills ---
+  if (!Array.isArray(saveData.m_BillList)) saveData.m_BillList = [];
+  var btb = document.getElementById('bill-tbody');
+  while (btb.firstChild) btb.removeChild(btb.firstChild);
+  saveData.m_BillList.forEach(function(bill, idx) {
+    var tr = document.createElement('tr');
+    var tdName = document.createElement('td');
+    tdName.textContent = BILL_TYPE_LABELS[bill.billType] || ('Bill ' + (bill.billType !== undefined ? bill.billType : idx));
+    tdName.style.fontWeight = '600';
+    tr.appendChild(tdName);
+
+    var tdDays = document.createElement('td');
+    var inpDays = document.createElement('input');
+    inpDays.type = 'number'; inpDays.min = '0'; inpDays.value = (bill.billDayPassed || 0);
+    (function(i){ inpDays.addEventListener('change', function(){ saveData.m_BillList[i].billDayPassed = parseInt(this.value)||0; markChanged(); }); })(idx);
+    tdDays.appendChild(inpDays); tr.appendChild(tdDays);
+
+    var tdAmt = document.createElement('td');
+    var inpAmt = document.createElement('input');
+    inpAmt.type = 'number'; inpAmt.min = '0'; inpAmt.step = '0.01'; inpAmt.value = (bill.amountToPay || 0);
+    (function(i){ inpAmt.addEventListener('change', function(){ saveData.m_BillList[i].amountToPay = parseFloat(this.value)||0; markChanged(); }); })(idx);
+    tdAmt.appendChild(inpAmt); tr.appendChild(tdAmt);
+
+    btb.appendChild(tr);
+  });
+
+  // --- Statistics (all-time) ---
+  var sg = document.getElementById('stats-grid');
+  while (sg.firstChild) sg.removeChild(sg.firstChild);
+  var rep = saveData.m_GameReportDataCollectPermanent || {};
+  STAT_FIELDS.forEach(function(f){
+    var key = f[0], label = f[1], isMoney = f[2];
+    var raw = rep[key];
+    var val = (typeof raw === 'number') ? raw : 0;
+    var disp = isMoney ? ('$' + val.toLocaleString('en-US', {maximumFractionDigits:2}))
+                       : val.toLocaleString('en-US', {maximumFractionDigits:2});
+    var box = document.createElement('div');
+    box.style.cssText = 'background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;';
+    var k = document.createElement('div'); k.style.cssText='font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;'; k.textContent=label;
+    var v = document.createElement('div'); v.style.cssText='font-size:16px;font-weight:800;color:' + (isMoney ? 'var(--green)' : 'var(--cyan)') + ';'; v.textContent=disp;
+    box.appendChild(k); box.appendChild(v); sg.appendChild(box);
+  });
+
+  // --- Automation settings ---
+  var setg = document.getElementById('settings-grid');
+  while (setg.firstChild) setg.removeChild(setg.firstChild);
+  SETTING_FIELDS.forEach(function(f){
+    var key = f[0], label = f[1];
+    var grp = document.createElement('div');
+    grp.className = 'form-group';
+    var lab = document.createElement('label'); lab.textContent = label;
+    var inp = document.createElement('input');
+    inp.type = 'number'; inp.step = 'any';
+    inp.value = (typeof saveData[key] === 'number') ? saveData[key] : 0;
+    (function(k){ inp.addEventListener('change', function(){ saveData[k] = parseFloat(this.value); if (isNaN(saveData[k])) saveData[k]=0; markChanged(); }); })(key);
+    grp.appendChild(lab); grp.appendChild(inp); setg.appendChild(grp);
+  });
+
+  // --- Champion cards & tournament (info) ---
+  var ct = document.getElementById('champ-tourney');
+  while (ct.firstChild) ct.removeChild(ct.firstChild);
+  var champ = Array.isArray(saveData.m_ChampionCardCollectedList) ? saveData.m_ChampionCardCollectedList : [];
+  var champOwned = champ.filter(function(x){ return x; }).length;
+  var info = document.createElement('div');
+  info.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;';
+  var tData = saveData.m_TournamentData || {};
+  var maxP = (tData.m_TournamentMaxPlayerCount !== undefined) ? tData.m_TournamentMaxPlayerCount : '—';
+  [['Champion Cards Collected', champOwned + ' / ' + champ.length],
+   ['Tournament Max Players', String(maxP)]].forEach(function(c){
+    var box = document.createElement('div');
+    box.style.cssText = 'background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;min-width:180px;';
+    var k = document.createElement('div'); k.style.cssText='font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;'; k.textContent=c[0];
+    var v = document.createElement('div'); v.style.cssText='font-size:16px;font-weight:800;color:var(--gold);'; v.textContent=c[1];
+    box.appendChild(k); box.appendChild(v); info.appendChild(box);
+  });
+  ct.appendChild(info);
+}
+
+function clearAllBills() {
+  if (!saveData || !Array.isArray(saveData.m_BillList)) return;
+  saveData.m_BillList.forEach(function(b){ b.amountToPay = 0; });
+  markChanged();
+  renderShopStats();
+}
+
+// ========================================================
+// TAB 8: FURNITURE (data from tcgcardshopsimulator.wiki.gg, MY DIY app)
+// Furniture has no unlock flag in the save; availability is gated by Shop Level.
+// name, file (image stem), price, level, desc, cat
+// ========================================================
+var FURNITURE_DATA = [
+  // Ware Displays
+  {name:"Small Cabinet",file:"Furniture_1_SmallCabinet",price:150,level:2,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 3 types of item. Each compartment has volume of 48."},
+  {name:"Small Metal Rack",file:"Furniture_2_SmallMetalRack",price:200,level:2,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 5 types of item. Each compartment has volume of 16."},
+  {name:"2X2 Cabinet",file:"Furniture_24_2X2Cabinet",price:300,level:3,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 4 types of item. Each compartment has volume of 48."},
+  {name:"Single Sided Shelf",file:"Furniture_5_SingleSidedShelf",price:300,level:3,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 6 types of item. Each compartment has volume of 32."},
+  {name:"Double Sided Shelf",file:"Furniture_11_DoubleSidedShelf",price:750,level:11,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 16 types of item. Each compartment has volume of 32."},
+  {name:"Wide Shelf",file:"Furniture_18_WideShelf",price:3000,level:30,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 12 types of item. Each compartment has volume of 64."},
+  {name:"Corner Shelf",file:"Corner_Shelf",price:5000,level:65,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 8 types of item. Each compartment has volume of 96 or 144."},
+  {name:"Box Shelf",file:"Box_Shelf",price:4000,level:65,cat:"Ware Displays",desc:"Put items on shelf to sell them to your customers. Store up to 4 types of item. Each compartment has volume of 144."},
+  {name:"Tetramon Shelf",file:"Tetramon_Shelf",price:15000,level:95,cat:"Ware Displays",desc:"A special Tetramon-themed display shelf."},
+  // Personal Shelves
+  {name:"Small Personal Shelf",file:"Furniture_4_SmallPersonalShelf",price:150,level:3,cat:"Personal Shelves",desc:"Shelf to store your personal items. Store up to 3 types of item. Each compartment has volume of 48."},
+  {name:"Big Personal Shelf",file:"Furniture_16_BigPersonalShelf",price:1000,level:23,cat:"Personal Shelves",desc:"Shelf to store your personal items. Store up to 8 types of item. Each compartment has volume of 48."},
+  {name:"Huge Personal Shelf",file:"Furniture_19_HugePersonalShelf",price:2500,level:35,cat:"Personal Shelves",desc:"Shelf to store your personal items. Store up to 10 types of item. Each compartment has volume of 48."},
+  // Card Displays
+  {name:"Card Table",file:"Furniture_6_CardTable",price:400,level:3,cat:"Card Displays",desc:"Put your card collection on this table to sell it to customers. This table has 10 card slots."},
+  {name:"Small Card Display",file:"Furniture_8_SmallCardDisplay",price:400,level:10,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 8 card slots."},
+  {name:"Wall Display Case (4)",file:"Furniture_22_SmallWallDisplay",price:500,level:12,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 4 card slots."},
+  {name:"Card Projector S",file:"Furniture_25_CardProjectorS",price:1000,level:15,cat:"Card Displays",desc:"Putting a card in the device will magnify it on the digital screen."},
+  {name:"Card Display Table",file:"Furniture_15_CardDisplayTable",price:1000,level:20,cat:"Card Displays",desc:"Put your card collection on this table for display. This table has 10 card slots."},
+  {name:"Vintage Card Table",file:"Furniture_17_VintageCardTable",price:2000,level:25,cat:"Card Displays",desc:"Put your card collection on this table to sell it to customers. This table has 12 card slots."},
+  {name:"Wall Display Case (6)",file:"Furniture_27_WallDisplay6",price:700,level:28,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 6 card slots."},
+  {name:"Wall Display Case (8)",file:"Furniture_23_WallDisplay",price:1000,level:28,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 8 card slots."},
+  {name:"Card Projector M",file:"Furniture_28_CardProjectorM",price:3000,level:30,cat:"Card Displays",desc:"Putting a card in the device will magnify it on the digital screen."},
+  {name:"Big Card Display",file:"Furniture_21_BigCardDisplay",price:5000,level:50,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This table has 20 card slots."},
+  {name:"Wall Display Case 36 (Black)",file:"Furniture_32_WallDisplay36Black",price:5000,level:52,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 36 card slots."},
+  {name:"Wall Display Case 36 (White)",file:"Furniture_33_WallDisplay36White",price:5000,level:52,cat:"Card Displays",desc:"Put your card collection on this shelf for display. This shelf has 36 card slots."},
+  {name:"Card Projector L",file:"Furniture_35_CardProjectorL",price:8000,level:60,cat:"Card Displays",desc:"Putting a card in the device will magnify it on the digital screen."},
+  // Auto Sprayers
+  {name:"Auto Scent M100",file:"Furniture_9_AutoScentM100",price:500,level:5,cat:"Auto Sprayers",desc:"Automatically sprays when bad odour is detected. Holds up to 2 Cleanser."},
+  {name:"Auto Scent G500",file:"Furniture_14_AutoScentG500",price:1500,level:18,cat:"Auto Sprayers",desc:"Automatically sprays when bad odour is detected. Holds up to 4 Cleanser."},
+  {name:"Auto Scent T1000",file:"Furniture_20_AutoScentT1000",price:4000,level:40,cat:"Auto Sprayers",desc:"Automatically sprays when bad odour is detected. Holds up to 7 Cleanser."},
+  // Warehouse Shelves
+  {name:"Small Warehouse Shelf",file:"Furniture_7_SmallWarehouseShelf",price:500,level:5,cat:"Warehouse Shelves",desc:"Put packaging box on shelf to store your stocks. Store up to 4 types of item. Each compartment has volume of 64."},
+  {name:"Big Warehouse Shelf",file:"Furniture_12_BigWarehouseShelf",price:1000,level:13,cat:"Warehouse Shelves",desc:"Put packaging box on shelf to store your stocks. Store up to 8 types of item. Each compartment has volume of 64."},
+  // Shop Furniture
+  {name:"Play Table",file:"Furniture_3_PlayTable",price:200,level:2,cat:"Shop Furniture",desc:"Customers can play card game here, good way to earn extra income. Comes with 2 chairs."},
+  {name:"Workbench",file:"Furniture_10_Workbench",price:1000,level:7,cat:"Shop Furniture",desc:"Bundle up your jank cards here, you can sell them as bulk on the shelf."},
+  {name:"Empty Box Storage",file:"Empty_Box_Storage",price:750,level:9,cat:"Shop Furniture",desc:"Store or take empty packaging box here. Holds up to 200 empty packaging boxes."},
+  {name:"Trash Bin",file:"Furniture_21_TrashBin",price:500,level:10,cat:"Shop Furniture",desc:"Throw anything in here to dispose of it."},
+  {name:"Checkout Counter",file:"Furniture_13_CheckoutCounter",price:1500,level:15,cat:"Shop Furniture",desc:"Customers go here to pay for the items they want to buy, comes with cash register and credit card machine."},
+  {name:"Bulk Donation Box",file:"Bulk_Donation_Box",price:1200,level:18,cat:"Shop Furniture",desc:"Put up to 10000 cards for customers to take for free and make them happy!"},
+  {name:"Card Storage Shelf",file:"Card_Storage_Shelf",price:2000,level:20,cat:"Shop Furniture",desc:"Put up to 10000 cards for workers to take and display them for sale."},
+  {name:"Tournament Prize Table",file:"Tournament_Prize_Shelf",price:5000,level:25,cat:"Shop Furniture",desc:"Store the tournament's prize here. Store up to 8 cards and 9 types of items. Each compartment has volume of 32."},
+  {name:"Play Table (Black)",file:"Furniture_30_PlayTableBlack",price:2500,level:45,cat:"Shop Furniture",desc:"Customers can play card game here, good way to earn extra income. Comes with 2 chairs."},
+  {name:"Play Table (White)",file:"Furniture_31_PlayTableWhite",price:2500,level:45,cat:"Shop Furniture",desc:"Customers can play card game here, good way to earn extra income. Comes with 2 chairs."},
+  // Card Openers
+  {name:"Pack Opener Machine S",file:"Furniture_26_PackOpenerMachineS",price:3000,level:16,cat:"Card Openers",desc:"Automatically opens card packs. Holds up to 32 packs at a time."},
+  {name:"Pack Opener Machine M",file:"Furniture_29_PackOpenerMachineM",price:8000,level:32,cat:"Card Openers",desc:"Automatically opens card packs. Holds up to 64 packs at a time."},
+  {name:"Pack Opener Machine L",file:"Furniture_34_PackOpenerMachineL",price:20000,level:55,cat:"Card Openers",desc:"Automatically opens card packs. Holds up to 128 packs at a time."}
+];
+
+function renderFurniture() {
+  if (!saveData) return;
+  var nodata = document.getElementById('fn-nodata');
+  var form = document.getElementById('fn-form');
+  if (!nodata || !form) return;
+  nodata.style.display = 'none';
+  form.style.display = 'block';
+
+  var shopLevel = (typeof saveData.m_ShopLevel === 'number') ? saveData.m_ShopLevel : 0;
+  var slEl = document.getElementById('fn-shoplevel');
+  if (slEl) slEl.textContent = 'Shop Level: ' + shopLevel;
+
+  var search = (document.getElementById('fn-search') ? document.getElementById('fn-search').value.toLowerCase() : '');
+
+  // Group by level
+  var byLevel = {};
+  FURNITURE_DATA.forEach(function(f){
+    if (search && f.name.toLowerCase().indexOf(search) === -1 && f.cat.toLowerCase().indexOf(search) === -1) return;
+    (byLevel[f.level] = byLevel[f.level] || []).push(f);
+  });
+  var levels = Object.keys(byLevel).map(Number).sort(function(a,b){ return a-b; });
+
+  var cont = document.getElementById('fn-list');
+  while (cont.firstChild) cont.removeChild(cont.firstChild);
+
+  var base = "https://tcgcardshopsimulator.wiki.gg/images/";
+
+  levels.forEach(function(lv){
+    var unlocked = shopLevel >= lv;
+    // Level header
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:10px;margin:18px 0 10px;';
+    var lvlBadge = document.createElement('span');
+    lvlBadge.textContent = 'Level ' + lv;
+    lvlBadge.style.cssText = 'font-weight:800;font-size:13px;padding:4px 12px;border-radius:99px;'
+      + (unlocked ? 'color:var(--green);background:rgba(16,185,129,0.15);' : 'color:var(--muted);background:rgba(255,255,255,0.05);');
+    header.appendChild(lvlBadge);
+    var status = document.createElement('span');
+    status.textContent = unlocked ? '● Unlocked' : '○ Locked';
+    status.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:' + (unlocked ? 'var(--green)' : 'var(--muted)') + ';';
+    header.appendChild(status);
+    cont.appendChild(header);
+
+    // Grid of furniture cards
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;';
+    byLevel[lv].forEach(function(f){
+      var card = document.createElement('div');
+      card.style.cssText = 'background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;cursor:pointer;transition:all 0.15s;'
+        + (unlocked ? '' : 'opacity:0.55;');
+      card.addEventListener('mouseenter', function(){ this.style.borderColor='var(--accent)'; });
+      card.addEventListener('mouseleave', function(){ this.style.borderColor='var(--border)'; });
+
+      var img = document.createElement('img');
+      img.src = base + f.file + '.png';
+      img.alt = f.name;
+      img.loading = 'lazy';
+      img.style.cssText = 'width:100%;height:90px;object-fit:contain;background:#000;border-radius:4px;';
+      img.onerror = function(){ this.style.display='none'; };
+      card.appendChild(img);
+
+      var nm = document.createElement('div');
+      nm.textContent = f.name;
+      nm.style.cssText = 'font-size:12px;font-weight:600;margin-top:8px;line-height:1.3;';
+      card.appendChild(nm);
+
+      var pr = document.createElement('div');
+      pr.textContent = '$' + f.price.toLocaleString('en-US');
+      pr.style.cssText = 'font-size:12px;color:var(--gold);font-weight:700;margin-top:2px;';
+      card.appendChild(pr);
+
+      card.addEventListener('click', function(){ showFurnitureDetail(f, unlocked); });
+      grid.appendChild(card);
+    });
+    cont.appendChild(grid);
+  });
+
+  // bind search once
+  if (!renderFurniture._bound) {
+    renderFurniture._bound = true;
+    var se = document.getElementById('fn-search');
+    if (se) se.addEventListener('input', function(){ renderFurniture(); });
+  }
+}
+
+function showFurnitureDetail(f, unlocked) {
+  var base = "https://tcgcardshopsimulator.wiki.gg/images/";
+  var overlay = document.getElementById('fn-detail-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'fn-detail-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.addEventListener('click', function(e){ if (e.target===overlay) overlay.style.display='none'; });
+    document.body.appendChild(overlay);
+  }
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+  overlay.style.display = 'flex';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:var(--panel);border:1px solid var(--border-highlight);border-radius:var(--radius-lg);padding:24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);';
+
+  var img = document.createElement('img');
+  img.src = base + f.file + '.png';
+  img.alt = f.name;
+  img.style.cssText = 'width:100%;height:200px;object-fit:contain;background:#000;border-radius:var(--radius-md);margin-bottom:16px;';
+  img.onerror = function(){ this.style.display='none'; };
+  box.appendChild(img);
+
+  var nm = document.createElement('h2');
+  nm.textContent = f.name;
+  nm.style.cssText = 'font-size:20px;font-weight:800;margin-bottom:4px;';
+  box.appendChild(nm);
+
+  var cat = document.createElement('div');
+  cat.textContent = f.cat;
+  cat.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:14px;';
+  box.appendChild(cat);
+
+  var desc = document.createElement('div');
+  desc.textContent = f.desc;
+  desc.style.cssText = 'font-size:13px;color:var(--text);line-height:1.5;margin-bottom:16px;';
+  box.appendChild(desc);
+
+  var stats = document.createElement('div');
+  stats.style.cssText = 'display:flex;gap:16px;flex-wrap:wrap;margin-bottom:18px;';
+  var shopLevel = (typeof saveData.m_ShopLevel === 'number') ? saveData.m_ShopLevel : 0;
+  [['Price','$'+f.price.toLocaleString('en-US'),'var(--gold)'],
+   ['Unlock Level','Lv.'+f.level,'var(--cyan)'],
+   ['Status', (shopLevel>=f.level?'Unlocked':'Locked'), (shopLevel>=f.level?'var(--green)':'var(--red)')]
+  ].forEach(function(s){
+    var d=document.createElement('div');
+    var k=document.createElement('div'); k.textContent=s[0]; k.style.cssText='font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;';
+    var v=document.createElement('div'); v.textContent=s[1]; v.style.cssText='font-size:15px;font-weight:800;color:'+s[2]+';';
+    d.appendChild(k); d.appendChild(v); stats.appendChild(d);
+  });
+  box.appendChild(stats);
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;';
+  var setBtn = document.createElement('button');
+  setBtn.className = 'btn btn-p';
+  setBtn.textContent = 'Set Shop Level to ' + f.level;
+  setBtn.title = 'Sets your Shop Level so this furniture unlocks.';
+  setBtn.addEventListener('click', function(){
+    saveData.m_ShopLevel = f.level;
+    markChanged();
+    // sync Player tab field if present
+    var pf = document.getElementById('p_shopLevel'); if (pf) pf.value = f.level;
+    overlay.style.display='none';
+    renderFurniture();
+  });
+  btnRow.appendChild(setBtn);
+
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'btn btn-gray';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', function(){ overlay.style.display='none'; });
+  btnRow.appendChild(closeBtn);
+  box.appendChild(btnRow);
+
+  overlay.appendChild(box);
+}
+
+// ========================================================
+// TAB 5: ACHIEVEMENTS
+// ========================================================
+function renderAchievements() {
+  if (!saveData) return;
+  document.getElementById('a-nodata').style.display = 'none';
+  document.getElementById('a-form').style.display = 'block';
+
+  if (!Array.isArray(saveData.m_IsAchievementUnlocked)) saveData.m_IsAchievementUnlocked =[];
+  while (saveData.m_IsAchievementUnlocked.length < 100) saveData.m_IsAchievementUnlocked.push(false);
+
+  var grid = document.getElementById('ach-grid');
+  while (grid.firstChild) grid.removeChild(grid.firstChild);
+  for (var i = 0; i < 100; i++) {
+    var unlocked = !!saveData.m_IsAchievementUnlocked[i];
+    var item = document.createElement('div');
+    item.className = 'ach-item' + (unlocked ? ' unlocked' : '');
+    item.id = 'ach-' + i;
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = 'ach-cb-' + i;
+    cb.checked = unlocked;
+    (function(idx){ cb.addEventListener('change', function(){ setAchievement(idx, this.checked); }); })(i);
+    var lbl = document.createElement('label');
+    lbl.setAttribute('for', 'ach-cb-' + i);
+    lbl.style.cursor = 'pointer';
+    var achName = ACHIEVEMENT_NAMES[i];
+    if (achName) {
+      lbl.style.display = 'flex';
+      lbl.style.flexDirection = 'column';
+      lbl.style.lineHeight = '1.2';
+      var an = document.createElement('span');
+      an.textContent = achName;
+      an.style.fontWeight = '600';
+      var ai = document.createElement('span');
+      ai.textContent = '#' + (i+1);
+      ai.style.fontSize = '11px';
+      ai.style.color = 'var(--muted)';
+      lbl.appendChild(an);
+      lbl.appendChild(ai);
+    } else {
+      lbl.textContent = 'Achievement #' + (i+1);
+    }
+    item.appendChild(cb);
+    item.appendChild(lbl);
+    grid.appendChild(item);
+  }
+  ensureDecoArrays();
+  updateDecoStats();
+}
+
+function setAchievement(i, val) {
+  saveData.m_IsAchievementUnlocked[i] = val;
+  var div = document.getElementById('ach-' + i);
+  if (div) div.className = 'ach-item' + (val ? ' unlocked' : '');
+  markChanged();
+}
+function unlockAllAch() {
+  if (!saveData) return;
+  for (var i=0;i<100;i++) saveData.m_IsAchievementUnlocked[i]=true;
+  markChanged(); renderAchievements();
+}
+function lockAllAch() {
+  if (!saveData) return;
+  for (var i=0;i<100;i++) saveData.m_IsAchievementUnlocked[i]=false;
+  markChanged(); renderAchievements();
+}
+
+function ensureDecoArrays() {
+  var defs = [['m_UnlockedDecoWallList',1001],['m_UnlockedDecoFloorList',1001],['m_UnlockedDecoCeilingList',1001]];
+  defs.forEach(function(pair) {
+    var k = pair[0], sz = pair[1];
+    if (!Array.isArray(saveData[k])) saveData[k] = [];
+    while (saveData[k].length < sz) saveData[k].push(false);
+  });
+  if (!Array.isArray(saveData.m_DecorationInventoryList)) saveData.m_DecorationInventoryList =[];
+  while (saveData.m_DecorationInventoryList.length < 1000) saveData.m_DecorationInventoryList.push(0);
+}
+
+function unlockAllDeco(type) {
+  if (!saveData) return;
+  ensureDecoArrays();
+  var k = 'm_UnlockedDeco' + type + 'List';
+  var maxCount = 100; // Cap to valid game items instead of 1001
+  for (var i=0;i<Math.min(saveData[k].length, maxCount);i++) saveData[k][i]=true;
+  markChanged(); updateDecoStats();
+}
+function updateDecoStats() {
+  if (!saveData) return;
+  ensureDecoArrays();
+  var wc = saveData.m_UnlockedDecoWallList.filter(Boolean).length;
+  var fc = saveData.m_UnlockedDecoFloorList.filter(Boolean).length;
+  var cc = saveData.m_UnlockedDecoCeilingList.filter(Boolean).length;
+  var iv = saveData.m_DecorationInventoryList.reduce(function(a,b){return a+b;},0);
+  var ws = document.getElementById('deco-wall-stat');
+  var fs = document.getElementById('deco-floor-stat');
+  var cs = document.getElementById('deco-ceil-stat');
+  var is = document.getElementById('deco-inv-stat');
+  if (ws) ws.textContent = 'Walls Unlocked: ' + wc;
+  if (fs) fs.textContent = 'Floors Unlocked: ' + fc;
+  if (cs) cs.textContent = 'Ceilings Unlocked: ' + cc;
+  if (is) is.textContent = 'Total Inventory: ' + iv;
+}
+function setAllDecoInventory() {
+  if (!saveData) return; ensureDecoArrays();
+  var maxCount = 250; // Cap to valid layout items instead of 1000
+  for (var i=0;i<Math.min(saveData.m_DecorationInventoryList.length, maxCount);i++) saveData.m_DecorationInventoryList[i]=1;
+  markChanged(); updateDecoStats();
+}
+function clearDecoInventory() {
+  if (!saveData) return; ensureDecoArrays();
+  for (var i=0;i<1000;i++) saveData.m_DecorationInventoryList[i]=0;
+  markChanged(); updateDecoStats();
+}
+
+// ========================================================
+// TAB 6: RAW JSON
+// ========================================================
+function updateRawJson() {
+  if (!saveData) return;
+  var el = document.getElementById('raw-json-area');
+  if (el) {
+    el.value = JSON.stringify(saveData, null, 2);
+    updateJsonLineCount();
+  }
+}
+function updateJsonLineCount() {
+  var el = document.getElementById('raw-json-area');
+  var lc = document.getElementById('json-lc');
+  if (el && lc) lc.textContent = el.value.split('\n').length.toLocaleString() + ' lines';
+}
+function jsonReplaceAll() {
+  var s = document.getElementById('json-search').value;
+  var r = document.getElementById('json-replace').value;
+  if (!s) return;
+  var el = document.getElementById('raw-json-area');
+  var escaped = s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  var count = (el.value.match(new RegExp(escaped,'g'))||[]).length;
+  el.value = el.value.split(s).join(r);
+  updateJsonLineCount();
+  showMsg('ok', 'Replaced ' + count + ' occurrence(s).');
+}
+function applyJsonChanges() {
+  var el = document.getElementById('raw-json-area');
+  var msgEl = document.getElementById('json-msg');
+  while (msgEl.firstChild) msgEl.removeChild(msgEl.firstChild);
+  try {
+    var parsed = JSON.parse(el.value);
+    saveData = parsed;
+    markChanged();
+    cachedRows = null; cachedRowsExp = null;
+    renderAll();
+    showMsg('ok', 'JSON applied successfully. All tabs updated.');
+  } catch(err) {
+    showMsg('err', 'JSON parse error: ' + err.message);
+  }
+}
+
+// ========================================================
+// SAVE / BACKUP
+// ========================================================
+function trySave() {
+  if (!saveData) return;
+  document.getElementById('save-modal').classList.add('show');
+}
+function closeSaveModal() {
+  document.getElementById('save-modal').classList.remove('show');
+}
+function downloadBackupThenSave() {
+  closeSaveModal();
+  if (originalData) {
+    var d = new Date();
+    var ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (loadedWasGzip) {
+      // Back up the original file as gzip too, name + _backup
+      var bakName = loadedFileName + '_backup_' + ds;
+      downloadBytes(buildUnityGzip(originalData), bakName);
+    } else {
+      downloadStr(originalData, 'savedGames_Release0_backup_'+ds+'.json');
+    }
+  }
+  setTimeout(doSave, 400);
+}
+function doSave() {
+  closeSaveModal();
+  if (!saveData) return;
+  var jsonText = JSON.stringify(saveData);  // compact, same shape as the game's original format (no indentation)
+
+  if (loadedWasGzip) {
+    // Export as a valid GameData_* gzip file (format identical to Unity: OS=03, XFL=00, MTIME=0)
+    downloadBytes(buildUnityGzip(jsonText), loadedFileName);
+    showMsg('ok', 'Exported "' + loadedFileName + '" as a valid gzip GameData file. Restore it directly with JKSV.');
+  } else {
+    // Source file was plain JSON -> export JSON as before
+    downloadStr(JSON.stringify(saveData, null, 2), loadedFileName || 'savedGames_Release0.json');
+    showMsg('ok', 'Save file exported successfully!');
+  }
+
+  unsavedChanges = false;
+  document.getElementById('unsaved').style.display = 'none';
+  incrementGlobalStats();
+}
+
+// Build a gzip with a header identical to the Unity save files: ID 1f8b, CM=08 (deflate),
+// FLG=0, MTIME=0, XFL=0, OS=3 (Unix). Uses pako's deflateRaw + manual CRC32/ISIZE.
+function buildUnityGzip(text) {
+  var enc = new TextEncoder();
+  var raw = enc.encode(text);                       // UTF-8 bytes of the JSON
+  var deflated = pako.deflateRaw(raw, { level: 6 }); // raw DEFLATE (no zlib header)
+
+  var header = new Uint8Array([0x1f,0x8b,0x08,0x00, 0,0,0,0, 0x00, 0x03]);
+  var crc = crc32(raw) >>> 0;
+  var isize = raw.length >>> 0;
+  var trailer = new Uint8Array(8);
+  trailer[0]= crc & 0xff;        trailer[1]=(crc>>>8)&0xff;
+  trailer[2]=(crc>>>16)&0xff;    trailer[3]=(crc>>>24)&0xff;
+  trailer[4]= isize & 0xff;      trailer[5]=(isize>>>8)&0xff;
+  trailer[6]=(isize>>>16)&0xff;  trailer[7]=(isize>>>24)&0xff;
+
+  var out = new Uint8Array(header.length + deflated.length + trailer.length);
+  out.set(header, 0);
+  out.set(deflated, header.length);
+  out.set(trailer, header.length + deflated.length);
+  return out;
+}
+
+// CRC32 (IEEE) for the gzip trailer
+var _crcTable = (function(){
+  var t = new Uint32Array(256);
+  for (var n=0; n<256; n++){
+    var c = n;
+    for (var k=0; k<8; k++) c = (c & 1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes){
+  var c = 0xFFFFFFFF;
+  for (var i=0; i<bytes.length; i++) c = _crcTable[(c ^ bytes[i]) & 0xFF] ^ (c>>>8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+function downloadBytes(uint8arr, filename) {
+  var blob = new Blob([uint8arr], {type:'application/octet-stream'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function downloadStr(text, filename) {
+  var blob = new Blob([text], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+window.addEventListener('beforeunload', function(e) {
+  if (unsavedChanges) { e.preventDefault(); e.returnValue = ''; }
+});
+</script>
+</body>
+</html>
