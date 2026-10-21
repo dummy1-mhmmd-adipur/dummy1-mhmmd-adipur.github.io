@@ -36,10 +36,22 @@ Live: https://dummy1-mhmmd-adipur.github.io/
 A browser-based save editor for **TCG Card Shop Simulator** (PC & Nintendo Switch).
 
 - Loads the game's gzip-compressed `GameData` files directly (via [pako](https://github.com/nodeca/pako)).
-- Edit coins, cards (Tetramon, Destiny, Megabot, Fantasy RPG, Cat Job, Ghost, Ascension), workers, customer reviews, bills, statistics, and furniture.
-- Exports a **valid `GameData` file** (gzip header identical to the game's, OS byte `03`) ready to restore via **JKSV**.
+- Loads the game's gzip-compressed `GameData` files directly and exports a **valid `GameData` file** (gzip header identical to the game's, OS byte `03`) ready to restore via **JKSV**.
 - Card, worker, and furniture data sourced from the official [wiki](https://tcgcardshopsimulator.wiki.gg/).
 - Runs 100% in the browser — nothing is uploaded.
+
+**Features (by tab):**
+
+- **Player** — player name, coins, shop level & EXP, fame, current day, review average (auto, read-only), unlock room/warehouse counts, tutorial flags.
+- **Cards & Collection** — edit every card across **8 sets**: Tetramon, Destiny, Megabot, Fantasy RPG, Cat Job, Ascension, Ghost, Ghost Black. Per card: copies, collected flag, sell/market price, border type (Base→Full Art) and foil. Wiki thumbnails + names, search, and per-set colored thumbnails.
+- **Items** — stock count, set/cost/market price, and license-unlock per item (0–499).
+- **Workers** — 9 slots with wiki photos, names, stats (restock/checkout speed, fee, salary), price multipliers, pack-type toggles, EXP (max/clear), and hire/fire.
+- **Grading** — in-progress graded cards (fast-forward days) and graded card inventory.
+- **Achievements & Unlocks** — toggle 100 achievements (with names) + unlock all walls/floors/ceilings decorations.
+- **Reviews** — edit the 50 stored customer reviews (name, 1–5 stars, type, time); the average recalculates from the stars.
+- **Shop & Stats** — bills (set to 0), all-time statistics (21 metrics), automation settings (Quick Fill / Workbench / Donation), champion cards & tournament info.
+- **Furniture** — browse all **43 furniture** items from the MY DIY app, grouped by level, with thumbnails, details (price, description), lock/unlock status vs your shop level, and a **"Set Shop Level"** shortcut to unlock.
+- **Raw JSON** — direct JSON editor with search & replace.
 
 > Tip: when repacking a Switch save for JKSV, zip the **files at the root** of the archive (not a wrapping folder, no `__MACOSX`). On macOS use the terminal, not right‑click → Compress.
 
