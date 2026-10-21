@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>NEW BANGGA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <p style="font-family:sans-serif;text-align:center;margin-top:40px;">Opening NEW BANGGA…</p>
+  <script>
+    // App: NEW BANGGA (Maspion / Bangga Mobile Banking)
+    var playStoreUrl = 'https://play.google.com/store/apps/details?id=com.bangga.mobilebanking&hl=id';
+    var appStoreUrl  = 'https://apps.apple.com/id/app/new-bangga/id1635950204';
+
+    var ua = navigator.userAgent;
+    var isAndroid = /Android/i.test(ua);
+    var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    if (isAndroid)      window.location.href = playStoreUrl;
+    else if (isIOS)     window.location.href = appStoreUrl;
+    else                window.location.href = playStoreUrl; // desktop fallback
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>BMI Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <p style="font-family:sans-serif;text-align:center;margin-top:40px;">Opening BMI Mobile…</p>
+  <script>
+    // App: BMI (Pactindo Revamp BMI)
+    var playStoreUrl = 'https://play.google.com/store/apps/details?id=com.pactindo.revamp.bmi&hl=id';
+    // TODO: ganti dengan App Store ID resmi BMI jika sudah tersedia
+    var appStoreUrl  = 'https://apps.apple.com/id/developer/pactindo';
+
+    var ua = navigator.userAgent;
+    var isAndroid = /Android/i.test(ua);
+    var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    if (isAndroid)      window.location.href = playStoreUrl;
+    else if (isIOS)     window.location.href = appStoreUrl;
+    else                window.location.href = playStoreUrl; // desktop fallback
+  </script>
+</body>
+</html>

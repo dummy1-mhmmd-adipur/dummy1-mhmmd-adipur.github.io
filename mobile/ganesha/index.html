@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Bank Ganesha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <p style="font-family:sans-serif;text-align:center;margin-top:40px;">Opening Bank Ganesha…</p>
+  <script>
+    // App: Bank Ganesha
+    // TODO: ganti package name & App Store ID dengan yang resmi
+    var playStoreUrl = 'https://play.google.com/store/apps/details?id=com.bankganesha.mobile&hl=id';
+    var appStoreUrl  = 'https://apps.apple.com/id/developer/bank-ganesha';
+
+    var ua = navigator.userAgent;
+    var isAndroid = /Android/i.test(ua);
+    var isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    if (isAndroid)      window.location.href = playStoreUrl;
+    else if (isIOS)     window.location.href = appStoreUrl;
+    else                window.location.href = playStoreUrl; // desktop fallback
+  </script>
+</body>
+</html>
