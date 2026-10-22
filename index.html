@@ -108,30 +108,43 @@
   </div>
 
   <script>
+  // ---- Monochrome line icons (stroke=currentColor, white on gradient) ----
+  function I(paths){return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+paths+'</svg>';}
+  var ICONS={
+    save:   I('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'),
+    layers: I('<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>'),
+    braces: I('<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/>'),
+    swap:   I('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'),
+    qr:     I('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="17"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="21" y1="17" x2="21" y2="21"/><line x1="14" y1="21" x2="17" y2="21"/>'),
+    droplet:I('<path d="M12 2.7s6 5.1 6 9.3a6 6 0 1 1-12 0c0-4.2 6-9.3 6-9.3z"/>'),
+    link:   I('<path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/>'),
+    image:  I('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>')
+  };
+
   // ---- App data (single source of truth) ----
   var APPS=[
-    {name:"TCG Save Editor",href:"tcg-save-editor/",ico:"T",grad:"145deg,#6366f1,#06b6d4",cat:"save",
+    {name:"TCG Save Editor",href:"tcg-save-editor/",svg:ICONS.save,grad:"145deg,#6366f1,#06b6d4",cat:"save",
      desc:"Edit your TCG Card Shop Simulator save: coins, cards, workers, reviews, bills, stats and furniture. Exports a valid GameData file ready for JKSV.",
      tags:["PC & Switch","Vanilla JS"]},
-    {name:"Universal Save Editor",href:"universal-save-editor/",ico:"U",grad:"145deg,#10b981,#06b6d4",cat:"save",
+    {name:"Universal Save Editor",href:"universal-save-editor/",svg:ICONS.layers,grad:"145deg,#10b981,#06b6d4",cat:"save",
      desc:"Load any JSON, gzip, Base64, XML or plain-text save file, edit it in a visual tree, and export back to the original format.",
      tags:["Multi-format","Privacy-first"]},
-    {name:"JSON Formatter",href:"json-formatter/",ico:"{ }",grad:"145deg,#a855f7,#6366f1",cat:"dev",
+    {name:"JSON Formatter",href:"json-formatter/",svg:ICONS.braces,grad:"145deg,#a855f7,#6366f1",cat:"dev",
      desc:"Beautify, minify and validate JSON, with an interactive collapsible tree view and search.",
      tags:["Dev tool"]},
-    {name:"Base64 · Hex · gzip",href:"encoder/",ico:"⇄",grad:"145deg,#06b6d4,#3b82f6",cat:"dev",
+    {name:"Base64 · Hex · gzip",href:"encoder/",svg:ICONS.swap,grad:"145deg,#06b6d4,#3b82f6",cat:"dev",
      desc:"Encode/decode Base64, Hex, URL and gzip (as Base64) — with one-click swap and copy.",
      tags:["Converter"]},
-    {name:"QR Code Generator",href:"qr-generator/",ico:"▦",grad:"145deg,#f59e0b,#d97706",cat:"dev",
+    {name:"QR Code Generator",href:"qr-generator/",svg:ICONS.qr,grad:"145deg,#f59e0b,#d97706",cat:"dev",
      desc:"Turn text or a URL into a QR code with custom colors, and download it as PNG or SVG.",
      tags:["PNG / SVG"]},
-    {name:"Color Picker & Palette",href:"color-palette/",ico:"◑",grad:"145deg,#ec4899,#f59e0b",cat:"design",
+    {name:"Color Picker & Palette",href:"color-palette/",svg:ICONS.droplet,grad:"145deg,#ec4899,#f59e0b",cat:"design",
      desc:"Pick a color, copy HEX/RGB/HSL, and generate shades, tints and harmonies.",
      tags:["Design"]},
-    {name:"Universal Link Tester",href:"link-tester/",ico:"🔗",grad:"145deg,#6366f1,#8b5cf6",cat:"mobile",
+    {name:"Universal Link Tester",href:"link-tester/",svg:ICONS.link,grad:"145deg,#6366f1,#8b5cf6",cat:"mobile",
      desc:"Fetch and validate a domain's apple-app-site-association and assetlinks.json.",
      tags:["Mobile dev"]},
-    {name:"Icon & Splash Preview",href:"icon-preview/",ico:"🖼",grad:"145deg,#10b981,#22c55e",cat:"mobile",
+    {name:"Icon & Splash Preview",href:"icon-preview/",svg:ICONS.image,grad:"145deg,#10b981,#22c55e",cat:"mobile",
      desc:"Upload a logo and preview it as app icons (various shapes/sizes) and a phone splash screen.",
      tags:["Mobile dev"]}
   ];
@@ -166,7 +179,7 @@
       var card=document.createElement('a');
       card.className='card';card.href=a.href;card.setAttribute('data-card','');
       card.innerHTML=
-        '<div class="top"><div class="ico" style="background:linear-gradient('+a.grad+')">'+esc(a.ico)+'</div><span class="arrow">↗</span></div>'+
+        '<div class="top"><div class="ico" style="background:linear-gradient('+a.grad+')">'+a.svg+'</div><span class="arrow">↗</span></div>'+
         '<h3>'+highlight(a.name,q)+'</h3>'+
         '<p class="desc">'+highlight(a.desc,q)+'</p>'+
         '<div class="tags"><span class="chip live">● Live</span>'+a.tags.map(function(t){return '<span class="chip">'+esc(t)+'</span>';}).join('')+'</div>';

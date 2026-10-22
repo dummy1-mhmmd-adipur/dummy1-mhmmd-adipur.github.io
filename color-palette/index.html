@@ -50,27 +50,10 @@ h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
   <a class="home" href="../">← All apps</a>
 </div>
 <div class="content">
-  <div class="top">
-    <div class="picker">
-      <div id="big"></div>
-      <input type="color" id="pick" value="#6366f1" oninput="update()">
-    </div>
-    <div class="codes">
-      <h3>Color codes</h3>
-      <div class="code"><span class="lbl">HEX</span><span class="val" id="hex"></span><span class="cp" onclick="cp('hex')">copy</span></div>
-      <div class="code"><span class="lbl">RGB</span><span class="val" id="rgb"></span><span class="cp" onclick="cp('rgb')">copy</span></div>
-      <div class="code"><span class="lbl">HSL</span><span class="val" id="hsl"></span><span class="cp" onclick="cp('hsl')">copy</span></div>
-    </div>
-  </div>
-  <h2>Shades &amp; Tints</h2>
-  <div class="pal" id="shades"></div>
-  <h2>Harmonies (complementary · triadic · analogous)</h2>
-  <div class="pal" id="harm"></div>
-
-  <h2>Pick from an image</h2>
+  <h2 style="margin-top:0;">Pick from an image</h2>
   <div id="imgzone">
     <div id="imgdrop">
-      <div class="big">🖼️</div>
+      <div class="big"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
       <p><strong>Drop, paste (⌘/Ctrl+V) or click</strong> to load an image, then click anywhere on it to pick a color.</p>
       <input type="file" id="imgfile" accept="image/*" style="display:none">
     </div>
@@ -83,6 +66,25 @@ h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
       <canvas id="cv"></canvas>
     </div>
   </div>
+
+  <h2>Color &amp; codes</h2>
+  <div class="top">
+    <div class="picker">
+      <div id="big"></div>
+      <input type="color" id="pick" value="#6366f1" oninput="update()">
+    </div>
+    <div class="codes">
+      <h3>Color codes</h3>
+      <div class="code"><span class="lbl">HEX</span><span class="val" id="hex"></span><span class="cp" onclick="cp('hex')">copy</span></div>
+      <div class="code"><span class="lbl">RGB</span><span class="val" id="rgb"></span><span class="cp" onclick="cp('rgb')">copy</span></div>
+      <div class="code"><span class="lbl">HSL</span><span class="val" id="hsl"></span><span class="cp" onclick="cp('hsl')">copy</span></div>
+    </div>
+  </div>
+
+  <h2>Shades &amp; Tints</h2>
+  <div class="pal" id="shades"></div>
+  <h2>Harmonies (complementary · triadic · analogous)</h2>
+  <div class="pal" id="harm"></div>
 </div>
 <script>
 function hex2rgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
