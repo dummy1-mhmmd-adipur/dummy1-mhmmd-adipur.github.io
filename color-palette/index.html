@@ -31,6 +31,16 @@ h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
 .sw:hover{transform:translateY(-3px);}
 .sw .c{height:70px;}
 .sw .h{font-family:var(--mono);font-size:11px;padding:7px;text-align:center;color:var(--muted);background:var(--panel);}
+#imgdrop{border:2px dashed var(--border-hi);border-radius:var(--radius);padding:34px 20px;text-align:center;background:rgba(255,255,255,0.02);cursor:pointer;transition:all .2s;}
+#imgdrop.hover{border-color:var(--accent);background:rgba(99,102,241,0.08);}
+#imgdrop .big{font-size:32px;margin-bottom:8px;}
+#imgdrop p{color:var(--muted);font-size:13px;}
+.imgtools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.hintp{font-family:var(--mono);font-size:13px;color:var(--muted);}
+.hover-sw{width:22px;height:22px;border-radius:6px;border:1px solid var(--border);display:inline-block;background:transparent;}
+.cp{font-size:11px;color:var(--muted);cursor:pointer;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:rgba(255,255,255,0.03);}
+.cp:hover{color:var(--text);border-color:var(--border-hi);}
+#cv{max-width:100%;border-radius:12px;border:1px solid var(--border);cursor:crosshair;display:block;}
 @media(max-width:600px){.top{grid-template-columns:1fr;}#header{padding:12px 16px;}.content{padding:18px 14px 50px;}}
 </style>
 </head>
@@ -56,6 +66,23 @@ h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
   <div class="pal" id="shades"></div>
   <h2>Harmonies (complementary · triadic · analogous)</h2>
   <div class="pal" id="harm"></div>
+
+  <h2>Pick from an image</h2>
+  <div id="imgzone">
+    <div id="imgdrop">
+      <div class="big">🖼️</div>
+      <p><strong>Drop, paste (⌘/Ctrl+V) or click</strong> to load an image, then click anywhere on it to pick a color.</p>
+      <input type="file" id="imgfile" accept="image/*" style="display:none">
+    </div>
+    <div id="imgwrap" style="display:none;">
+      <div class="imgtools">
+        <span class="hintp" id="hoverhex">Hover the image…</span>
+        <span class="hover-sw" id="hoverSw"></span>
+        <button class="cp" onclick="clearImg()">Remove image</button>
+      </div>
+      <canvas id="cv"></canvas>
+    </div>
+  </div>
 </div>
 <script>
 function hex2rgb(h){h=h.replace('#','');return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
@@ -78,6 +105,59 @@ function update(){
 }
 function swatch(host,hex){var d=document.createElement('div');d.className='sw';d.title='Click to use';d.onclick=function(){document.getElementById('pick').value=hex;update();};d.innerHTML='<div class="c" style="background:'+hex+'"></div><div class="h">'+hex+'</div>';host.appendChild(d);}
 function cp(id){var v=document.getElementById(id).textContent;if(v)navigator.clipboard.writeText(v);}
+
+// ===== Pick from image =====
+var cv=document.getElementById('cv'), ctx=cv.getContext('2d',{willReadFrequently:true});
+var imgfile=document.getElementById('imgfile'), imgdrop=document.getElementById('imgdrop'), imgwrap=document.getElementById('imgwrap');
+imgdrop.addEventListener('click',function(){imgfile.click();});
+imgfile.addEventListener('change',function(e){if(e.target.files[0])loadImg(e.target.files[0]);});
+imgdrop.addEventListener('dragover',function(e){e.preventDefault();imgdrop.classList.add('hover');});
+imgdrop.addEventListener('dragleave',function(){imgdrop.classList.remove('hover');});
+imgdrop.addEventListener('drop',function(e){e.preventDefault();imgdrop.classList.remove('hover');var f=e.dataTransfer.files[0];if(f)loadImg(f);});
+// paste anywhere on the page
+document.addEventListener('paste',function(e){
+  var items=(e.clipboardData||window.clipboardData).items;
+  for(var i=0;i<items.length;i++){ if(items[i].type.indexOf('image')===0){ loadImg(items[i].getAsFile()); e.preventDefault(); break; } }
+});
+function loadImg(file){
+  if(!file||!/^image\//.test(file.type)){ return; }
+  var r=new FileReader();
+  r.onload=function(ev){
+    var im=new Image();
+    im.onload=function(){
+      // scale to fit max width ~760 keeping aspect, cap height
+      var maxW=760, maxH=520, w=im.width, h=im.height;
+      var scale=Math.min(1, maxW/w, maxH/h);
+      cv.width=Math.round(w*scale); cv.height=Math.round(h*scale);
+      ctx.drawImage(im,0,0,cv.width,cv.height);
+      imgdrop.style.display='none'; imgwrap.style.display='block';
+    };
+    im.src=ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
+function pixelAt(e){
+  var r=cv.getBoundingClientRect();
+  var x=Math.floor((e.clientX-r.left)*(cv.width/r.width));
+  var y=Math.floor((e.clientY-r.top)*(cv.height/r.height));
+  x=Math.max(0,Math.min(cv.width-1,x)); y=Math.max(0,Math.min(cv.height-1,y));
+  var d=ctx.getImageData(x,y,1,1).data;
+  return rgb2hex(d[0],d[1],d[2]);
+}
+cv.addEventListener('mousemove',function(e){
+  var hex=pixelAt(e);
+  document.getElementById('hoverhex').textContent=hex;
+  document.getElementById('hoverSw').style.background=hex;
+});
+cv.addEventListener('click',function(e){
+  var hex=pixelAt(e);
+  document.getElementById('pick').value=hex;
+  update();
+  // flash confirm
+  document.getElementById('hoverhex').textContent=hex+' ✓ picked';
+});
+function clearImg(){ imgwrap.style.display='none'; imgdrop.style.display='block'; ctx.clearRect(0,0,cv.width,cv.height); }
+
 update();
 </script>
 </body>
