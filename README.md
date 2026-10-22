@@ -95,6 +95,48 @@ Then visit:
 
 ---
 
+## Planned apps / ideas
+
+Ideas for future client-side tools to add here (all run 100% in the browser, no backend).
+Sizes are estimates — for reference, the full-featured **TCG Save Editor is ~196 KB**
+(148 KB HTML + 48 KB pako), and the whole published site is currently **~0.6 MB**.
+
+### Save editors (TCG theme)
+| App | What it does | Est. size |
+|-----|--------------|-----------|
+| More Unity save editors | Same load/export flow (gzip + JSON) reused for other Unity sim games | ~100–200 KB each |
+
+### Developer tools
+| App | What it does | Est. size |
+|-----|--------------|-----------|
+| JSON ↔ gzip tool | Compress/decompress any file with header control (OS byte, level) | ~60 KB (+48 KB pako) |
+| JSON formatter / viewer | Tree view, search, edit, validate | ~40–80 KB |
+| Base64 / hex / gzip converter | Quick encode/decode | ~30 KB (+48 KB pako) |
+| QR code generator | Text/URL → QR, download PNG/SVG | ~50 KB (+~40 KB qrcode lib) |
+| Color picker & palette | Pick a color, generate a palette | ~30 KB |
+
+### Mobile-dev tools
+| App | What it does | Est. size |
+|-----|--------------|-----------|
+| Universal Link tester | Input a domain, fetch & validate its AASA / assetlinks.json | ~40 KB |
+| App icon / splash preview | Upload an image, preview across device sizes | ~50 KB + uploaded image (in-memory only) |
+
+### Will this fit on free GitHub Pages?
+
+**Yes — easily.** GitHub Pages free limits (from the official docs):
+
+- **Published site ≤ 1 GB** (hard). Current site ≈ 0.6 MB — about **0.06%** used.
+- **Repo recommended ≤ 1 GB.**
+- **Bandwidth soft limit 100 GB/month.** Each app is tens–hundreds of KB, so even
+  thousands of visitors stay far under the limit.
+- **No build step** (static + `.nojekyll`), so the 10-builds/hour limit does not apply.
+
+Even adding **all** the apps above (~1–2 MB total) uses a tiny fraction of the 1 GB cap.
+Keep individual files under ~50 MB and bundle third-party libs locally (like `pako.min.js`)
+so apps keep working offline.
+
+---
+
 ## Adding a new web app
 
 1. Create a folder, e.g. `my-new-tool/`, with an `index.html` inside.
