@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Save Editor — Edit game saves in your browser</title>
+<meta name="description" content="Free, privacy-focused universal save editor. Load JSON, gzip, Base64, XML and plain-text save files, edit them in a visual tree, and export back. 100% local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="pako.min.js"></script>
+<script>
+  if (typeof pako === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"><\/script>');
+  }
+</script>
+<style>
+:root{
+  --bg:#09090b; --panel:#141417; --panel2:#1c1c21; --input:#000;
+  --text:#fafafa; --muted:#a1a1aa; --border:rgba(255,255,255,0.08); --border-hi:rgba(255,255,255,0.16);
+  --accent:#6366f1; --accent2:#06b6d4; --green:#10b981; --gold:#f59e0b; --red:#ef4444;
+  --radius:16px; --radius-sm:8px;
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; line-height:1.5;
+  min-height:100vh; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(99,102,241,0.1), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(6,182,212,0.1), transparent 40%);
+  background-attachment:fixed;
+}
+a{color:var(--accent2);text-decoration:none;}
+/* Header */
+#header{
+  display:flex;align-items:center;gap:16px;padding:16px 28px;
+  background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;
+}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{
+  font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;
+  padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;
+}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn:disabled{opacity:.45;pointer-events:none;}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent-hover,#4f46e5));border:none;color:#fff;}
+.btn-p:hover{box-shadow:0 6px 16px rgba(99,102,241,0.3);}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1100px;margin:0 auto;padding:28px 24px 80px;}
+/* Dropzone */
+#drop{
+  border:2px dashed var(--border-hi);border-radius:var(--radius);padding:56px 24px;text-align:center;
+  background:rgba(255,255,255,0.02);transition:all .2s;cursor:pointer;
+}
+#drop.hover{border-color:var(--accent);background:rgba(99,102,241,0.08);}
+#drop .big{font-size:40px;margin-bottom:12px;}
+#drop h2{font-size:20px;font-weight:800;margin-bottom:8px;}
+#drop p{color:var(--muted);font-size:14px;}
+#drop .formats{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.fmt-chip{font-family:var(--mono);font-size:11px;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 10px;border-radius:99px;}
+/* Editor */
+#editor{display:none;}
+.bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 18px;margin-bottom:18px;
+}
+.bar .fname{font-family:var(--mono);font-size:13px;font-weight:600;}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:99px;}
+.badge.fmt{color:var(--accent2);background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.25);}
+.bar .spacer{flex:1;}
+.tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:5px;width:max-content;margin-bottom:16px;}
+.tab{padding:7px 16px;border-radius:99px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
+.tab.active{background:var(--accent);color:#fff;}
+.pane{display:none;}
+.pane.active{display:block;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:4px;}
+/* Tree */
+#tree{font-family:var(--mono);font-size:13px;padding:16px;max-height:62vh;overflow:auto;}
+.node{padding-left:16px;}
+.row{display:flex;align-items:center;gap:6px;padding:2px 4px;border-radius:5px;}
+.row:hover{background:rgba(255,255,255,0.04);}
+.toggle{width:14px;display:inline-block;color:var(--muted);cursor:pointer;user-select:none;text-align:center;}
+.key{color:#c084fc;}
+.colon{color:var(--muted);}
+.val{color:var(--text);}
+.val.string{color:#86efac;}
+.val.number{color:#7dd3fc;}
+.val.boolean{color:#fbbf24;}
+.val.null{color:var(--muted);font-style:italic;}
+.val-edit{background:var(--input);border:1px solid var(--border-hi);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:13px;padding:2px 6px;min-width:60px;}
+.type-label{font-size:10px;color:var(--muted);margin-left:6px;}
+.mini{font-size:11px;color:var(--muted);cursor:pointer;padding:1px 6px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,0.03);}
+.mini:hover{border-color:var(--border-hi);color:var(--text);}
+.count{color:var(--muted);font-size:11px;margin-left:6px;}
+/* Raw */
+#raw{width:100%;min-height:62vh;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-family:var(--mono);font-size:12.5px;line-height:1.6;resize:vertical;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
+.toolbar input[type=text]{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;width:200px;}
+/* Messages */
+#msg{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.toast{padding:12px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.toast.ok{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;}
+.toast.err{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
+@media (max-width:600px){ .content{padding:18px 14px 60px;} #drop{padding:36px 16px;} #header{padding:12px 16px;} .bar{padding:12px;} }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Universal Save Editor</h1>
+  <a class="home" href="../">← All apps</a>
+  <input type="file" id="file" style="display:none">
+  <button class="btn" onclick="document.getElementById('file').click()">Load File</button>
+  <button class="btn btn-g" id="export-btn" onclick="exportFile()" disabled>Export</button>
+</div>
+
+<div class="content">
+  <!-- Upload -->
+  <div id="drop">
+    <div class="big">💾</div>
+    <h2>Drop your save file here</h2>
+    <p>or click to browse. Everything runs locally — your file never leaves your device.</p>
+    <div class="formats">
+      <span class="fmt-chip">JSON</span>
+      <span class="fmt-chip">gzip + JSON</span>
+      <span class="fmt-chip">Base64</span>
+      <span class="fmt-chip">XML</span>
+      <span class="fmt-chip">Plain text</span>
+    </div>
+  </div>
+
+  <!-- Editor -->
+  <div id="editor">
+    <div class="bar">
+      <span class="fname" id="fname">file</span>
+      <span class="badge fmt" id="fmt-badge">—</span>
+      <span class="spacer"></span>
+      <button class="btn" onclick="resetEditor()">Load another</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-pane="tree" onclick="switchPane('tree')">Tree Editor</div>
+      <div class="tab" data-pane="raw" onclick="switchPane('raw')">Raw Text</div>
+    </div>
+
+    <div class="pane active" id="pane-tree">
+      <div class="toolbar">
+        <input type="text" id="tree-search" placeholder="Search keys/values…" oninput="renderTree()">
+        <button class="mini" onclick="expandAll(true)">Expand all</button>
+        <button class="mini" onclick="expandAll(false)">Collapse all</button>
+        <span class="count" id="tree-info"></span>
+      </div>
+      <div class="card"><div id="tree"></div></div>
+    </div>
+
+    <div class="pane" id="pane-raw">
+      <div class="toolbar">
+        <button class="mini" onclick="applyRaw()">Apply raw changes</button>
+        <button class="mini" onclick="formatRaw()">Beautify JSON</button>
+        <span class="count">Edit the decoded content directly. Click "Apply" to sync the tree.</span>
+      </div>
+      <textarea id="raw" spellcheck="false"></textarea>
+    </div>
+  </div>
+</div>
+
+<div id="msg"></div>
+
+<script>
+// ==================================================
+// State
+// ==================================================
+var state = {
+  fileName: 'file',
+  format: null,        // 'json' | 'gzip-json' | 'base64-json' | 'json-text' | 'xml' | 'text'
+  data: null,          // parsed object (for json-like)
+  rawText: '',         // decoded text (for raw editor / non-json)
+  isJson: false,
+  gzipOS: 0x03,        // preserved OS byte for gzip re-export
+  expanded: {}         // tree expand state by path
+};
+
+// ==================================================
+// Helpers
+// ==================================================
+function toast(type, text){
+  var el=document.createElement('div');
+  el.className='toast '+(type==='err'?'err':'ok');
+  el.textContent=text;
+  document.getElementById('msg').appendChild(el);
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 4500);
+}
+function isGzip(bytes){ return bytes.length>2 && bytes[0]===0x1f && bytes[1]===0x8b; }
+function looksBase64(str){
+  var s=str.trim().replace(/\s+/g,'');
+  return s.length>=8 && s.length%4===0 && /^[A-Za-z0-9+/]+={0,2}$/.test(s);
+}
+function tryParseJson(str){ try{ return {ok:true,val:JSON.parse(str)}; }catch(e){ return {ok:false}; } }
+
+// CRC32 for gzip trailer
+var _crc=(function(){var t=new Uint32Array(256);for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=_crc[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function buildGzip(text, osByte){
+  var raw=new TextEncoder().encode(text);
+  var deflated=pako.deflateRaw(raw,{level:6});
+  var header=new Uint8Array([0x1f,0x8b,0x08,0x00,0,0,0,0,0x00,osByte]);
+  var crc=crc32(raw)>>>0, isize=raw.length>>>0;
+  var tr=new Uint8Array(8);
+  tr[0]=crc&0xff;tr[1]=(crc>>>8)&0xff;tr[2]=(crc>>>16)&0xff;tr[3]=(crc>>>24)&0xff;
+  tr[4]=isize&0xff;tr[5]=(isize>>>8)&0xff;tr[6]=(isize>>>16)&0xff;tr[7]=(isize>>>24)&0xff;
+  var out=new Uint8Array(header.length+deflated.length+tr.length);
+  out.set(header,0);out.set(deflated,header.length);out.set(tr,header.length+deflated.length);
+  return out;
+}
+function download(data, filename, mime){
+  var blob=new Blob([data],{type:mime||'application/octet-stream'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ==================================================
+// Load & detect format
+// ==================================================
+var fileInput=document.getElementById('file');
+fileInput.addEventListener('change',function(e){ if(e.target.files[0]) loadFile(e.target.files[0]); this.value=''; });
+
+var drop=document.getElementById('drop');
+drop.addEventListener('click',function(){ fileInput.click(); });
+document.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('hover'); });
+document.addEventListener('dragleave',function(e){ if(!e.relatedTarget) drop.classList.remove('hover'); });
+document.addEventListener('drop',function(e){ e.preventDefault(); drop.classList.remove('hover'); if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+
+function loadFile(file){
+  state.fileName=file.name||'file';
+  var r=new FileReader();
+  r.onload=function(e){
+    try{ detectAndLoad(new Uint8Array(e.target.result)); }
+    catch(err){ toast('err','Failed to load: '+err.message); }
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function detectAndLoad(bytes){
+  var text, fmt;
+  if(isGzip(bytes)){
+    state.gzipOS = bytes.length>9 ? bytes[9] : 0x03;
+    text = pako.ungzip(bytes,{to:'string'});
+    var pj=tryParseJson(text);
+    if(pj.ok){ fmt='gzip-json'; state.isJson=true; state.data=pj.val; }
+    else { fmt='gzip-text'; state.isJson=false; }
+    state.rawText=text;
+  } else {
+    text = new TextDecoder('utf-8').decode(bytes);
+    var pj2=tryParseJson(text);
+    if(pj2.ok){ fmt='json'; state.isJson=true; state.data=pj2.val; state.rawText=text; }
+    else if(looksBase64(text)){
+      // try decode base64 -> maybe JSON
+      try{
+        var dec=atob(text.trim().replace(/\s+/g,''));
+        var pj3=tryParseJson(dec);
+        if(pj3.ok){ fmt='base64-json'; state.isJson=true; state.data=pj3.val; state.rawText=dec; }
+        else { fmt='base64-text'; state.isJson=false; state.rawText=dec; }
+      }catch(_){ fmt='text'; state.isJson=false; state.rawText=text; }
+    }
+    else if(/^\s*<\?xml|^\s*<[a-zA-Z]/.test(text)){ fmt='xml'; state.isJson=false; state.rawText=text; }
+    else { fmt='text'; state.isJson=false; state.rawText=text; }
+  }
+  state.format=fmt;
+  openEditor();
+}
+
+var FMT_LABEL={'json':'JSON','gzip-json':'gzip + JSON','gzip-text':'gzip + text','base64-json':'Base64 + JSON','base64-text':'Base64 + text','xml':'XML','text':'Plain text'};
+
+function openEditor(){
+  document.getElementById('drop').style.display='none';
+  document.getElementById('editor').style.display='block';
+  document.getElementById('export-btn').disabled=false;
+  document.getElementById('fname').textContent=state.fileName;
+  document.getElementById('fmt-badge').textContent=FMT_LABEL[state.format]||state.format;
+  document.getElementById('raw').value=state.rawText;
+  state.expanded={};
+  // default: if json -> tree, else -> raw
+  if(state.isJson){ switchPane('tree'); renderTree(); }
+  else { switchPane('raw'); }
+  toast('ok','Loaded "'+state.fileName+'" as '+(FMT_LABEL[state.format]||state.format));
+}
+
+function resetEditor(){
+  document.getElementById('editor').style.display='none';
+  document.getElementById('drop').style.display='block';
+  document.getElementById('export-btn').disabled=true;
+  state.data=null;state.rawText='';state.format=null;state.isJson=false;
+}
+
+// ==================================================
+// Tabs
+// ==================================================
+function switchPane(name){
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-pane')===name); });
+  document.getElementById('pane-tree').classList.toggle('active', name==='tree');
+  document.getElementById('pane-raw').classList.toggle('active', name==='raw');
+  // disable tree tab if not json
+  if(name==='tree' && !state.isJson){ document.getElementById('tree').innerHTML='<div style="color:var(--muted);padding:12px;">This format isn\'t JSON — use the Raw Text tab to edit it.</div>'; }
+}
+
+// ==================================================
+// Tree editor
+// ==================================================
+function valType(v){
+  if(v===null) return 'null';
+  if(Array.isArray(v)) return 'array';
+  return typeof v; // object, string, number, boolean
+}
+function renderTree(){
+  var host=document.getElementById('tree');
+  host.innerHTML='';
+  if(!state.isJson){ host.innerHTML='<div style="color:var(--muted);padding:12px;">Not JSON. Use Raw Text tab.</div>'; return; }
+  var search=(document.getElementById('tree-search').value||'').toLowerCase();
+  host.appendChild(buildNode(state.data, state.data, '', '', search));
+  var cnt=countNodes(state.data);
+  document.getElementById('tree-info').textContent=cnt+' nodes';
+}
+function countNodes(v){
+  var n=1;
+  if(Array.isArray(v)) v.forEach(function(x){ n+=countNodes(x); });
+  else if(v&&typeof v==='object') Object.keys(v).forEach(function(k){ n+=countNodes(v[k]); });
+  return n;
+}
+function matchesSearch(key, val, search){
+  if(!search) return true;
+  if(String(key).toLowerCase().indexOf(search)!==-1) return true;
+  var t=valType(val);
+  if(t!=='object'&&t!=='array') return String(val).toLowerCase().indexOf(search)!==-1;
+  // container: match if any descendant matches
+  if(Array.isArray(val)) return val.some(function(x,i){ return matchesSearch(i,x,search); });
+  return Object.keys(val).some(function(k){ return matchesSearch(k,val[k],search); });
+}
+function buildNode(value, parent, key, path, search){
+  var wrap=document.createElement('div');
+  wrap.className='node';
+  var t=valType(value);
+
+  if(t==='object'||t==='array'){
+    var keys = t==='array' ? value.map(function(_,i){return i;}) : Object.keys(value);
+    var row=document.createElement('div'); row.className='row';
+    var tg=document.createElement('span'); tg.className='toggle';
+    var isOpen = state.expanded[path]!==false && (path===''? true : state.expanded[path]===true || search);
+    if(path==='') isOpen=true;
+    tg.textContent=isOpen?'▾':'▸';
+    tg.onclick=function(){ state.expanded[path]=!(state.expanded[path]!==false); // toggle
+      state.expanded[path] = !isOpen; renderTree(); };
+    row.appendChild(tg);
+    if(key!==''){ var k=document.createElement('span'); k.className='key'; k.textContent=JSON.stringify(key); row.appendChild(k);
+      var c=document.createElement('span'); c.className='colon'; c.textContent=': '; row.appendChild(c); }
+    var lab=document.createElement('span'); lab.className='val null';
+    lab.textContent = t==='array' ? ('['+keys.length+']') : ('{'+keys.length+'}');
+    row.appendChild(lab);
+    // add child button
+    var add=document.createElement('span'); add.className='mini'; add.style.marginLeft='8px'; add.textContent='+ add';
+    add.onclick=function(e){ e.stopPropagation(); addChild(value, t); };
+    row.appendChild(add);
+    // delete button (not for root)
+    if(path!==''){ var del=document.createElement('span'); del.className='mini'; del.style.marginLeft='4px'; del.textContent='✕'; del.title='delete';
+      del.onclick=function(e){ e.stopPropagation(); deleteNode(parent, key); }; row.appendChild(del); }
+    wrap.appendChild(row);
+
+    if(isOpen){
+      keys.forEach(function(k){
+        if(!matchesSearch(k, value[k], search)) return;
+        var childPath=path+'/'+k;
+        wrap.appendChild(buildNode(value[k], value, k, childPath, search));
+      });
+    }
+  } else {
+    // leaf
+    var row2=document.createElement('div'); row2.className='row';
+    var sp=document.createElement('span'); sp.className='toggle'; sp.textContent=''; row2.appendChild(sp);
+    var k2=document.createElement('span'); k2.className='key'; k2.textContent=JSON.stringify(key); row2.appendChild(k2);
+    var c2=document.createElement('span'); c2.className='colon'; c2.textContent=': '; row2.appendChild(c2);
+    var inp=document.createElement('input'); inp.className='val-edit'; inp.value = t==='string'? value : String(value);
+    inp.size=Math.min(40,Math.max(6,String(value).length));
+    inp.onchange=function(){ setLeaf(parent,key,inp.value,t); };
+    row2.appendChild(inp);
+    var tl=document.createElement('span'); tl.className='type-label'; tl.textContent=t; row2.appendChild(tl);
+    var del2=document.createElement('span'); del2.className='mini'; del2.style.marginLeft='6px'; del2.textContent='✕'; del2.title='delete';
+    del2.onclick=function(){ deleteNode(parent,key); }; row2.appendChild(del2);
+    wrap.appendChild(row2);
+  }
+  return wrap;
+}
+function setLeaf(parent,key,strVal,origType){
+  var v=strVal;
+  if(origType==='number'){ var n=Number(strVal); v=isNaN(n)?strVal:n; }
+  else if(origType==='boolean'){ v=(strVal==='true'||strVal==='1'); }
+  else if(origType==='null'){ v = strVal==='null'?null:strVal; }
+  parent[key]=v;
+  syncRawFromData();
+}
+function deleteNode(parent,key){
+  if(Array.isArray(parent)) parent.splice(Number(key),1);
+  else delete parent[key];
+  renderTree(); syncRawFromData();
+}
+function addChild(container,type){
+  if(type==='array'){ container.push(''); }
+  else {
+    var name=prompt('New key name:'); if(name===null||name==='') return;
+    container[name]='';
+  }
+  renderTree(); syncRawFromData();
+}
+function expandAll(open){
+  (function walk(v,path){
+    if(v&&typeof v==='object'){
+      state.expanded[path]=open;
+      var keys=Array.isArray(v)?v.map(function(_,i){return i;}):Object.keys(v);
+      keys.forEach(function(k){ walk(v[k],path+'/'+k); });
+    }
+  })(state.data,'');
+  renderTree();
+}
+function syncRawFromData(){ if(state.isJson) document.getElementById('raw').value=JSON.stringify(state.data,null,2); }
+
+// ==================================================
+// Raw editor
+// ==================================================
+function applyRaw(){
+  var txt=document.getElementById('raw').value;
+  if(state.isJson){
+    var pj=tryParseJson(txt);
+    if(!pj.ok){ toast('err','Invalid JSON — fix it before applying.'); return; }
+    state.data=pj.val; state.rawText=txt; renderTree(); toast('ok','Applied to tree.');
+  } else { state.rawText=txt; toast('ok','Raw content updated.'); }
+}
+function formatRaw(){
+  var txt=document.getElementById('raw').value;
+  var pj=tryParseJson(txt);
+  if(!pj.ok){ toast('err','Not valid JSON to beautify.'); return; }
+  document.getElementById('raw').value=JSON.stringify(pj.val,null,2);
+}
+
+// ==================================================
+// Export
+// ==================================================
+function exportFile(){
+  // make sure latest edits are captured
+  var text;
+  if(state.isJson){
+    // prefer tree data; if on raw tab with unapplied valid json, apply it
+    if(document.getElementById('pane-raw').classList.contains('active')){
+      var pj=tryParseJson(document.getElementById('raw').value);
+      if(pj.ok) state.data=pj.val;
+    }
+    text=JSON.stringify(state.data);
+  } else {
+    text=document.getElementById('raw').value;
+  }
+
+  var fmt=state.format, name=state.fileName;
+  if(fmt==='gzip-json'||fmt==='gzip-text'){
+    download(buildGzip(text, state.gzipOS||0x03), name, 'application/octet-stream');
+    toast('ok','Exported gzip "'+name+'" (OS byte 0x'+(state.gzipOS||3).toString(16)+').');
+  } else if(fmt==='base64-json'||fmt==='base64-text'){
+    download(btoa(text), name, 'text/plain');
+    toast('ok','Exported Base64 "'+name+'".');
+  } else if(fmt==='json'){
+    download(state.isJson?JSON.stringify(state.data,null,2):text, name, 'application/json');
+    toast('ok','Exported JSON "'+name+'".');
+  } else { // xml / text
+    download(text, name, 'text/plain');
+    toast('ok','Exported "'+name+'".');
+  }
+}
+</script>
+</body>
+</html>
