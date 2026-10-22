@@ -133,7 +133,45 @@ a{color:var(--accent2);text-decoration:none;}
 .en-status.inspect{color:var(--gold);background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.28);}
 .en-status.soon{color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);}
 
-@media (max-width:600px){ .content{padding:18px 14px 60px;} #drop{padding:36px 16px;} #header{padding:12px 16px;} .bar{padding:12px;} }</style>
+/* How it works */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+.how{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.how-n{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:22px;font-weight:800;color:rgba(255,255,255,0.08);}
+.how-ico{font-size:26px;margin-bottom:10px;}
+.how h4{font-size:15px;font-weight:700;margin-bottom:6px;}
+.how p{font-size:13px;color:var(--muted);line-height:1.55;}
+
+/* ================== Responsive ================== */
+@media (max-width:860px){
+  .eng-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .how-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:600px){
+  .content{padding:18px 14px 60px;}
+  #header{padding:12px 14px;gap:8px;flex-wrap:wrap;}
+  #header h1{font-size:15px;flex:1 1 100%;}
+  #header .home{order:3;}
+  #header .btn{flex:1 1 auto;text-align:center;}
+  #drop{padding:34px 16px;}
+  #drop .big{font-size:32px;}
+  #drop h2{font-size:17px;}
+  .bar{padding:12px;}
+  .hsub{font-size:14px;}
+  .eng-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .eng{padding:14px;}
+  .eng .en-status{position:static;display:inline-block;margin-bottom:8px;}
+  .how-grid{grid-template-columns:1fr;}
+  .tabs{width:100%;}
+  .tab{flex:1;text-align:center;}
+  .toolbar input[type=text]{width:100%;}
+  #tree,#raw{font-size:12px;max-height:56vh;}
+  .val-edit{min-width:48px;}
+  #msg{left:12px;right:12px;transform:none;}
+  .toast{text-align:center;}
+}
+@media (max-width:380px){
+  .eng-grid{grid-template-columns:1fr;}
+}</style>
 </head>
 <body>
 <div id="header">
@@ -177,6 +215,35 @@ a{color:var(--accent2);text-decoration:none;}
       <span class="eng-note">Status reflects what this editor can actually do today.</span>
     </div>
     <div class="eng-grid" id="eng-grid"></div>
+
+    <!-- How It Works -->
+    <div class="eng-head"><h3>How it works</h3></div>
+    <div class="how-grid">
+      <div class="how">
+        <div class="how-n">1</div>
+        <div class="how-ico">📂</div>
+        <h4>Load</h4>
+        <p>Drop a save file or pick an engine. The format is auto-detected (gzip, JSON, Base64, XML, text) — nothing is uploaded.</p>
+      </div>
+      <div class="how">
+        <div class="how-n">2</div>
+        <div class="how-ico">🌳</div>
+        <h4>Edit</h4>
+        <p>Change values in the visual tree (coins, stats, flags) or switch to Raw Text. Add, edit, or delete fields freely.</p>
+      </div>
+      <div class="how">
+        <div class="how-n">3</div>
+        <div class="how-ico">📦</div>
+        <h4>Export</h4>
+        <p>Download back in the original format — gzip is re-packed with a game-compatible header, Base64 re-encoded, JSON kept clean.</p>
+      </div>
+      <div class="how">
+        <div class="how-n">4</div>
+        <div class="how-ico">🛡️</div>
+        <h4>Backup first</h4>
+        <p>Always keep a copy of your original save before replacing it. Edits apply only to the file you download.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Editor -->
