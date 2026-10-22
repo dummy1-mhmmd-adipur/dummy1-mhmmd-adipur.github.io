@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base64 · Hex · gzip Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="pako.min.js"></script>
+<script>if(typeof pako==='undefined'){document.write('<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"><\/script>');}</script>
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.content{max-width:960px;margin:0 auto;padding:24px 24px 70px;}
+.ops{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.op{padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;background:var(--panel);border:1px solid var(--border);transition:all .15s;}
+.op.active{background:var(--accent);color:#fff;border-color:transparent;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:8px;}
+textarea{width:100%;min-height:140px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.6;resize:vertical;}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;align-items:center;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.msg{font-size:12px;font-family:var(--mono);margin-top:6px;}
+.msg.err{color:#fca5a5;}.msg.ok{color:#6ee7b7;}
+.hint{font-size:12px;color:var(--muted);margin-bottom:16px;}
+@media(max-width:600px){#header{padding:12px 16px;}.content{padding:16px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Base64 · Hex · gzip Converter</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+  <div class="ops" id="ops"></div>
+  <p class="hint" id="hint"></p>
+  <div class="panel">
+    <div class="field">
+      <label>Input</label>
+      <textarea id="in" spellcheck="false" placeholder="Type or paste here…"></textarea>
+    </div>
+    <div class="btns">
+      <button class="btn btn-p" onclick="run()">Convert ↓</button>
+      <button class="btn" onclick="swap()">⇅ Swap</button>
+      <button class="btn" onclick="clearAll()">Clear</button>
+      <button class="btn btn-g" onclick="copyOut()">Copy output</button>
+      <span class="msg" id="msg"></span>
+    </div>
+    <div class="field">
+      <label>Output</label>
+      <textarea id="out" spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+<script>
+var OPS=[
+  {id:'b64enc',label:'Text → Base64'},
+  {id:'b64dec',label:'Base64 → Text'},
+  {id:'hexenc',label:'Text → Hex'},
+  {id:'hexdec',label:'Hex → Text'},
+  {id:'urlenc',label:'URL encode'},
+  {id:'urldec',label:'URL decode'},
+  {id:'gzip',label:'Text → gzip (Base64)'},
+  {id:'gunzip',label:'gzip (Base64) → Text'}
+];
+var HINTS={b64enc:'Encodes UTF-8 text to Base64.',b64dec:'Decodes Base64 back to UTF-8 text.',hexenc:'Encodes text to space-free hex bytes.',hexdec:'Decodes hex (spaces optional) back to text.',urlenc:'encodeURIComponent.',urldec:'decodeURIComponent.',gzip:'gzip-compress text, output as Base64 so it is copyable.',gunzip:'Decode Base64 then gzip-decompress to text.'};
+var cur='b64enc';
+function renderOps(){var g=document.getElementById('ops');g.innerHTML='';OPS.forEach(function(o){var d=document.createElement('div');d.className='op'+(o.id===cur?' active':'');d.textContent=o.label;d.onclick=function(){cur=o.id;renderOps();document.getElementById('hint').textContent=HINTS[cur];msg('','');};g.appendChild(d);});document.getElementById('hint').textContent=HINTS[cur];}
+function msg(t,type){var m=document.getElementById('msg');m.textContent=t;m.className='msg'+(type?' '+type:'');}
+function te(s){return new TextEncoder().encode(s);}function td(b){return new TextDecoder('utf-8').decode(b);}
+function b64FromBytes(b){var s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function bytesFromB64(s){var bin=atob(s.trim().replace(/\s+/g,''));var b=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return b;}
+function run(){
+  var inp=document.getElementById('in').value;var out='';
+  try{
+    if(cur==='b64enc')out=b64FromBytes(te(inp));
+    else if(cur==='b64dec')out=td(bytesFromB64(inp));
+    else if(cur==='hexenc')out=Array.from(te(inp)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+    else if(cur==='hexdec'){var h=inp.replace(/\s+/g,'');if(h.length%2)throw new Error('Hex length must be even');var b=new Uint8Array(h.length/2);for(var i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);out=td(b);}
+    else if(cur==='urlenc')out=encodeURIComponent(inp);
+    else if(cur==='urldec')out=decodeURIComponent(inp);
+    else if(cur==='gzip')out=b64FromBytes(pako.gzip(inp));
+    else if(cur==='gunzip')out=pako.ungzip(bytesFromB64(inp),{to:'string'});
+    document.getElementById('out').value=out;msg('✓ done · '+out.length.toLocaleString()+' chars','ok');
+  }catch(e){document.getElementById('out').value='';msg('✕ '+e.message,'err');}
+}
+function swap(){var i=document.getElementById('in'),o=document.getElementById('out');var tmp=i.value;i.value=o.value;o.value=tmp;
+  // flip to inverse op if available
+  var inv={b64enc:'b64dec',b64dec:'b64enc',hexenc:'hexdec',hexdec:'hexenc',urlenc:'urldec',urldec:'urlenc',gzip:'gunzip',gunzip:'gzip'};
+  if(inv[cur]){cur=inv[cur];renderOps();}}
+function clearAll(){document.getElementById('in').value='';document.getElementById('out').value='';msg('','');}
+function copyOut(){var v=document.getElementById('out').value;if(v){navigator.clipboard.writeText(v);msg('Copied!','ok');}}
+renderOps();
+</script>
+</body>
+</html>

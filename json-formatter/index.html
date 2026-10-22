@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Formatter &amp; Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.col h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:8px;}
+textarea{width:100%;min-height:64vh;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.6;resize:vertical;}
+#out{min-height:64vh;max-height:64vh;overflow:auto;background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-family:var(--mono);font-size:12.5px;}
+input[type=text]{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;width:200px;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+.err{color:#fca5a5;}
+.node{padding-left:16px;}
+.row{display:flex;gap:6px;padding:1px 0;}
+.tg{width:12px;color:var(--muted);cursor:pointer;user-select:none;}
+.k{color:#c084fc;}.s{color:#86efac;}.n{color:#7dd3fc;}.b{color:#fbbf24;}.nl{color:var(--muted);font-style:italic;}
+.muted{color:var(--muted);}
+@media(max-width:800px){.cols{grid-template-columns:1fr;}textarea,#out{min-height:40vh;max-height:none;}#header{padding:12px 16px;}.content{padding:16px 14px 50px;}input[type=text]{width:100%;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>JSON Formatter &amp; Viewer</h1>
+  <a class="home" href="../">← All apps</a>
+  <button class="btn btn-p" onclick="format()">Beautify</button>
+  <button class="btn" onclick="minify()">Minify</button>
+  <button class="btn btn-g" onclick="copyOut()">Copy</button>
+</div>
+<div class="content">
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search in tree…" oninput="renderTree()">
+    <button class="btn" onclick="expandAll(true)">Expand all</button>
+    <button class="btn" onclick="expandAll(false)">Collapse all</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <h3>Input</h3>
+      <textarea id="in" spellcheck="false" oninput="parse()" placeholder='Paste JSON here…  e.g. {"hello":"world","n":42,"arr":[1,2,3]}'></textarea>
+    </div>
+    <div class="col">
+      <h3>Tree view</h3>
+      <div id="out"><span class="muted">Valid JSON will appear here as an interactive tree.</span></div>
+    </div>
+  </div>
+</div>
+<script>
+var data=null, valid=false, expanded={};
+function parse(){
+  var txt=document.getElementById('in').value.trim();
+  var stat=document.getElementById('stat');
+  if(!txt){ data=null;valid=false;document.getElementById('out').innerHTML='<span class="muted">Paste JSON to begin.</span>';stat.textContent='';return; }
+  try{ data=JSON.parse(txt); valid=true; stat.textContent='✓ Valid · '+txt.length.toLocaleString()+' chars'; stat.className='stat'; expanded={}; renderTree(); }
+  catch(e){ valid=false; document.getElementById('out').innerHTML='<span class="err">✕ '+e.message+'</span>'; stat.textContent='✕ Invalid JSON'; stat.className='stat err'; }
+}
+function format(){ if(!valid){parse();} if(valid){ document.getElementById('in').value=JSON.stringify(data,null,2); } }
+function minify(){ if(!valid){parse();} if(valid){ document.getElementById('in').value=JSON.stringify(data); } }
+function copyOut(){ if(valid){ navigator.clipboard.writeText(JSON.stringify(data,null,2)); } }
+function vtype(v){ if(v===null)return'null'; if(Array.isArray(v))return'array'; return typeof v; }
+function renderTree(){
+  if(!valid)return;
+  var host=document.getElementById('out'); host.innerHTML='';
+  var s=(document.getElementById('search').value||'').toLowerCase();
+  host.appendChild(build(data,'','',s)); 
+}
+function matches(k,v,s){ if(!s)return true; if(String(k).toLowerCase().indexOf(s)!==-1)return true; var t=vtype(v); if(t!=='object'&&t!=='array')return String(v).toLowerCase().indexOf(s)!==-1; var ks=Array.isArray(v)?v.map(function(_,i){return i;}):Object.keys(v); return ks.some(function(kk){return matches(kk,v[kk],s);}); }
+function build(v,key,path,s){
+  var w=document.createElement('div');w.className='node';var t=vtype(v);
+  if(t==='object'||t==='array'){
+    var ks=t==='array'?v.map(function(_,i){return i;}):Object.keys(v);
+    var r=document.createElement('div');r.className='row';
+    var tg=document.createElement('span');tg.className='tg';
+    var open=s?true:(expanded[path]!==false);if(path==='')open=true;
+    tg.textContent=open?'▾':'▸';tg.onclick=function(){expanded[path]=!open;renderTree();};r.appendChild(tg);
+    if(key!==''){var kk=document.createElement('span');kk.className='k';kk.textContent='"'+key+'"';r.appendChild(kk);var c=document.createElement('span');c.className='muted';c.textContent=': ';r.appendChild(c);}
+    var lab=document.createElement('span');lab.className='nl';lab.textContent=t==='array'?('['+ks.length+']'):('{'+ks.length+'}');r.appendChild(lab);
+    w.appendChild(r);
+    if(open)ks.forEach(function(k){if(matches(k,v[k],s))w.appendChild(build(v[k],k,path+'/'+k,s));});
+  }else{
+    var r2=document.createElement('div');r2.className='row';
+    var sp=document.createElement('span');sp.className='tg';r2.appendChild(sp);
+    if(key!==''){var kk2=document.createElement('span');kk2.className='k';kk2.textContent='"'+key+'"';r2.appendChild(kk2);var c2=document.createElement('span');c2.className='muted';c2.textContent=': ';r2.appendChild(c2);}
+    var val=document.createElement('span');val.className=(t==='string'?'s':t==='number'?'n':t==='boolean'?'b':'nl');
+    val.textContent=t==='string'?('"'+v+'"'):String(v);r2.appendChild(val);
+    w.appendChild(r2);
+  }
+  return w;
+}
+function expandAll(open){ (function walk(v,p){ if(v&&typeof v==='object'){expanded[p]=open;var ks=Array.isArray(v)?v.map(function(_,i){return i;}):Object.keys(v);ks.forEach(function(k){walk(v[k],p+'/'+k);});} })(data,''); renderTree(); }
+</script>
+</body>
+</html>

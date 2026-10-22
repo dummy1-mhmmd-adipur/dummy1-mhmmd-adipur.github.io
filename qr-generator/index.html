@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- qrcode-generator: tiny, dependency-free -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.content{max-width:820px;margin:0 auto;padding:28px 24px 70px;display:grid;grid-template-columns:1fr 320px;gap:24px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:8px;}
+textarea,select,input[type=color],input[type=range]{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:13px;}
+textarea{min-height:100px;resize:vertical;}
+input[type=color]{height:42px;padding:4px;cursor:pointer;}
+.row{display:flex;gap:12px;}.row>div{flex:1;}
+.preview{display:flex;flex-direction:column;align-items:center;gap:16px;}
+#qrbox{background:#fff;padding:16px;border-radius:12px;display:inline-block;min-width:200px;min-height:200px;display:flex;align-items:center;justify-content:center;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;width:100%;}
+.btn:hover{background:rgba(255,255,255,0.08);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.rngval{font-family:var(--mono);font-size:12px;color:var(--muted);float:right;}
+@media(max-width:720px){.content{grid-template-columns:1fr;}#header{padding:12px 16px;}.content{padding:18px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>QR Code Generator</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+  <div class="panel">
+    <div class="field">
+      <label>Text or URL</label>
+      <textarea id="text" oninput="gen()" placeholder="https://example.com or any text…">https://dummy1-mhmmd-adipur.github.io/</textarea>
+    </div>
+    <div class="row">
+      <div class="field"><label>Foreground</label><input type="color" id="fg" value="#000000" oninput="gen()"></div>
+      <div class="field"><label>Background</label><input type="color" id="bg" value="#ffffff" oninput="gen()"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Error correction</label>
+        <select id="ec" onchange="gen()">
+          <option value="L">L — Low (7%)</option>
+          <option value="M" selected>M — Medium (15%)</option>
+          <option value="Q">Q — Quartile (25%)</option>
+          <option value="H">H — High (30%)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Size <span class="rngval" id="szval">320px</span></label>
+        <input type="range" id="sz" min="160" max="640" step="40" value="320" oninput="document.getElementById('szval').textContent=this.value+'px';gen()">
+      </div>
+    </div>
+  </div>
+  <div class="panel preview">
+    <div id="qrbox"><span style="color:#999;font-size:12px;">QR appears here</span></div>
+    <button class="btn btn-p" onclick="dlPng()">Download PNG</button>
+    <button class="btn btn-g" onclick="dlSvg()">Download SVG</button>
+  </div>
+</div>
+<script>
+function gen(){
+  var txt=document.getElementById('text').value||' ';
+  var ec=document.getElementById('ec').value;
+  var box=document.getElementById('qrbox');
+  try{
+    var qr=qrcode(0,ec); qr.addData(txt); qr.make();
+    var n=qr.getModuleCount();
+    var size=parseInt(document.getElementById('sz').value);
+    var fg=document.getElementById('fg').value, bg=document.getElementById('bg').value;
+    var cell=Math.floor(size/n), dim=cell*n;
+    var cv=document.createElement('canvas');cv.width=dim;cv.height=dim;
+    var ctx=cv.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,dim,dim);ctx.fillStyle=fg;
+    for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(qr.isDark(r,c))ctx.fillRect(c*cell,r*cell,cell,cell);
+    box.innerHTML='';box.appendChild(cv);
+    window._qr={qr:qr,n:n,fg:fg,bg:bg};
+  }catch(e){ box.innerHTML='<span style="color:#c00;font-size:12px;">'+e.message+'</span>'; }
+}
+function dlPng(){
+  var cv=document.querySelector('#qrbox canvas'); if(!cv)return;
+  var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='qrcode.png';a.click();
+}
+function dlSvg(){
+  if(!window._qr)return; var q=window._qr, n=q.n, cell=16, dim=n*cell;
+  var s='<svg xmlns="http://www.w3.org/2000/svg" width="'+dim+'" height="'+dim+'" viewBox="0 0 '+dim+' '+dim+'">';
+  s+='<rect width="'+dim+'" height="'+dim+'" fill="'+q.bg+'"/>';
+  for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.qr.isDark(r,c))s+='<rect x="'+(c*cell)+'" y="'+(r*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+q.fg+'"/>';
+  s+='</svg>';
+  var blob=new Blob([s],{type:'image/svg+xml'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qrcode.svg';a.click();URL.revokeObjectURL(a.href);
+}
+window.addEventListener('load',function(){ if(typeof qrcode==='undefined'){document.getElementById('qrbox').innerHTML='<span style="color:#c00;font-size:12px;padding:12px;">QR library needs internet on first load.</span>';return;} gen(); });
+</script>
+</body>
+</html>
