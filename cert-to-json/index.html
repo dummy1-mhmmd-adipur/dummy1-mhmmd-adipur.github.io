@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate to JSON Bytes</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+.note{font-size:13px;color:var(--muted);margin-bottom:14px;}
+#drop{border:2px dashed var(--border-hi);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;color:var(--muted);background:var(--panel);transition:all .15s;}
+#drop:hover,#drop.over{border-color:var(--accent);color:var(--text);}
+label{display:block;margin:10px 0;cursor:pointer;}
+input[type=radio]{accent-color:var(--accent);}
+code{font-family:var(--mono);font-size:12px;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);margin:12px 0 8px;min-height:18px;}
+textarea{width:100%;height:320px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-family:var(--mono);font-size:12px;resize:vertical;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Certificate &rarr; JSON Bytes</h1>
+  <a class="home" href="../">&larr; All apps</a>
+</div>
+<div class="content">
+<p class="note">Ubah sertifikat (.crt / .pem / .cer) menjadi JSON list byte, misalnya untuk SSL pinning di mobile. Semua proses terjadi di browser; file tidak dikirim ke server.</p>
+
+<div id="drop">Klik atau seret file .crt / .pem / .cer ke sini</div>
+<input type="file" id="file" accept=".crt,.pem,.cer,.der" hidden>
+
+<label><input type="radio" name="mode" value="raw" checked> Byte asli file (PEM teks, termasuk <code>-----BEGIN CERTIFICATE-----</code>)</label>
+<label><input type="radio" name="mode" value="der"> DER (biner, hasil decode base64 PEM)</label>
+
+<div id="info" class="stat"></div>
+<textarea id="out" readonly placeholder="Hasil JSON muncul di sini"></textarea>
+<div class="toolbar"><button class="btn btn-p" id="copy">Salin</button><button class="btn btn-g" id="download">Unduh .json</button></div>
+</div>
+
+<script>
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const out = document.getElementById('out');
+const info = document.getElementById('info');
+let bytes = null, baseName = 'certificate';
+
+function pemToDer(u8) {
+  const text = new TextDecoder().decode(u8);
+  const m = text.match(/-----BEGIN CERTIFICATE-----([\s\S]*?)-----END CERTIFICATE-----/);
+  if (!m) return u8; // sudah DER
+  const bin = atob(m[1].replace(/\s+/g, ''));
+  return Uint8Array.from(bin, c => c.charCodeAt(0));
+}
+
+function render() {
+  if (!bytes) return;
+  const mode = document.querySelector('input[name=mode]:checked').value;
+  const data = mode === 'der' ? pemToDer(bytes) : bytes;
+  const obj = {};
+  data.forEach((b, i) => { obj[i] = b; });
+  out.value = JSON.stringify(obj).replace(/,"/g, ', "').replace(/":/g, '": ');
+  info.textContent = `${baseName} — ${data.length} byte (${mode === 'der' ? 'DER' : 'asli'})`;
+}
+
+async function load(file) {
+  if (!file) return;
+  bytes = new Uint8Array(await file.arrayBuffer());
+  baseName = file.name.replace(/\.[^.]+$/, '');
+  render();
+}
+
+drop.onclick = () => fileInput.click();
+fileInput.onchange = e => load(e.target.files[0]);
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); load(e.dataTransfer.files[0]); };
+document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = render);
+
+document.getElementById('copy').onclick = async () => {
+  if (out.value) { await navigator.clipboard.writeText(out.value); info.textContent += ' — tersalin'; }
+};
+document.getElementById('download').onclick = () => {
+  if (!out.value) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([out.value], { type: 'application/json' }));
+  a.download = baseName + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+</script>
+</body>
+</html>
