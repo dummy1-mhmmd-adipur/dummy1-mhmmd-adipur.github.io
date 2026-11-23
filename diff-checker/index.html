@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Diff Checker</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+label.l{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:12px 0 6px;}
+label.l:first-child{margin-top:0;}
+textarea,input[type=text],input[type=number],select{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:12.5px;outline:none;}
+textarea{min-height:140px;resize:vertical;line-height:1.55;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);}
+pre.out{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:50vh;}
+.muted{color:var(--muted);}.err{color:#fca5a5;}.ok{color:#86efac;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}#header{padding:12px 16px;flex-wrap:wrap;}.content{padding:16px 14px 50px;}}
+.dout{font-family:var(--mono);font-size:12.5px;max-height:60vh;overflow:auto;}
+.ln{display:grid;grid-template-columns:44px 44px 1fr;padding:1px 0;}
+.ln .no{color:var(--muted);text-align:right;padding-right:10px;user-select:none;opacity:.7;}
+.ln .tx{white-space:pre-wrap;word-break:break-all;padding-right:12px;}
+.ln.ad{background:rgba(16,185,129,.14);}.ln.rm{background:rgba(239,68,68,.14);}
+.ln.ad .tx{color:#86efac;}.ln.rm .tx{color:#fca5a5;}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Text Diff Checker</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+<div class="toolbar">
+  <button class="btn btn-p" onclick="run()">Compare</button>
+  <button class="btn" onclick="swap()">Swap</button>
+  <label class="stat"><input type="checkbox" id="ws" onchange="run()"> Ignore whitespace</label>
+  <label class="stat"><input type="checkbox" id="cs" onchange="run()"> Ignore case</label>
+  <span class="stat" id="st"></span>
+</div>
+<div class="grid2">
+  <div><label class="l">Original</label><textarea id="a" spellcheck="false" oninput="run()" style="min-height:30vh"></textarea></div>
+  <div><label class="l">Changed</label><textarea id="b" spellcheck="false" oninput="run()" style="min-height:30vh"></textarea></div>
+</div>
+<div class="panel" style="margin-top:16px;padding:0"><div id="out" class="dout"><div class="muted" style="padding:14px">Paste text on both sides. The comparison is line by line.</div></div></div>
+</div>
+<script>
+function esc(x){return String(x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function swap(){var a=document.getElementById('a'),b=document.getElementById('b');var t=a.value;a.value=b.value;b.value=t;run();}
+function norm(l){var ws=document.getElementById('ws').checked,cs=document.getElementById('cs').checked;if(ws)l=l.replace(/\s+/g,' ').trim();if(cs)l=l.toLowerCase();return l;}
+function lcs(A,B){
+  var n=A.length,m=B.length,T=[];for(var i=0;i<=n;i++){T.push(new Uint32Array(m+1));}
+  for(i=n-1;i>=0;i--)for(var j=m-1;j>=0;j--)T[i][j]=A[i]===B[j]?T[i+1][j+1]+1:Math.max(T[i+1][j],T[i][j+1]);
+  var out=[];i=0;var j2=0;
+  while(i<n&&j2<m){if(A[i]===B[j2]){out.push(['=',i,j2]);i++;j2++;}else if(T[i+1][j2]>=T[i][j2+1]){out.push(['-',i,-1]);i++;}else{out.push(['+',-1,j2]);j2++;}}
+  while(i<n){out.push(['-',i++,-1]);}while(j2<m){out.push(['+',-1,j2++]);}
+  return out;
+}
+function run(){
+  var ta=document.getElementById('a').value,tb=document.getElementById('b').value,host=document.getElementById('out'),st=document.getElementById('st');
+  if(!ta&&!tb){host.innerHTML='<div class="muted" style="padding:14px">Paste text on both sides. The comparison is line by line.</div>';st.textContent='';return;}
+  var A=ta.split('\n'),B=tb.split('\n');
+  if(A.length*B.length>4000000){host.innerHTML='<div class="err" style="padding:14px">Input too large for in-browser diff (limit about 2000 x 2000 lines).</div>';return;}
+  var ops=lcs(A.map(norm),B.map(norm)),add=0,del=0,html='';
+  ops.forEach(function(o){
+    if(o[0]==='=')html+='<div class="ln"><span class="no">'+(o[1]+1)+'</span><span class="no">'+(o[2]+1)+'</span><span class="tx">'+esc(A[o[1]])+'</span></div>';
+    else if(o[0]==='-'){del++;html+='<div class="ln rm"><span class="no">'+(o[1]+1)+'</span><span class="no"></span><span class="tx">- '+esc(A[o[1]])+'</span></div>';}
+    else{add++;html+='<div class="ln ad"><span class="no"></span><span class="no">'+(o[2]+1)+'</span><span class="tx">+ '+esc(B[o[2]])+'</span></div>';}
+  });
+  st.textContent=(add||del)?add+' added · '+del+' removed':'Identical';
+  host.innerHTML=html;
+}
+</script>
+</body>
+</html>

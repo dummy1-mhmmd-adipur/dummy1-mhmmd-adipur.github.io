@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Link Command Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+label.l{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:12px 0 6px;}
+label.l:first-child{margin-top:0;}
+textarea,input[type=text],input[type=number],select{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:12.5px;outline:none;}
+textarea{min-height:140px;resize:vertical;line-height:1.55;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);}
+pre.out{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:50vh;}
+.muted{color:var(--muted);}.err{color:#fca5a5;}.ok{color:#86efac;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}#header{padding:12px 16px;flex-wrap:wrap;}.content{padding:16px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Deep Link Command Builder</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+<div class="panel"><h2>Link</h2>
+  <label class="l">URI (custom scheme or https link)</label>
+  <input type="text" id="uri" value="https://example.com/product/42?ref=ad" oninput="run()">
+  <label class="l">Android package (optional, forces the target app)</label>
+  <input type="text" id="pkg" placeholder="com.example.app" oninput="run()">
+  <label class="l">iOS bundle ID (optional)</label>
+  <input type="text" id="bid" placeholder="com.example.app" oninput="run()">
+  <div class="toolbar" style="margin-top:12px"><a class="btn" id="open" target="_blank" rel="noopener">Open in this browser</a><span class="stat" id="st"></span></div>
+</div>
+<div class="panel"><h2>Parsed</h2><pre class="out" id="parsed"></pre></div>
+<div class="grid2">
+  <div class="panel"><h2>Android: adb</h2><pre class="out" id="adb"></pre><div class="toolbar" style="margin-top:10px"><button class="btn btn-g" onclick="cp('adb')">Copy</button></div></div>
+  <div class="panel"><h2>iOS Simulator</h2><pre class="out" id="ios"></pre><div class="toolbar" style="margin-top:10px"><button class="btn btn-g" onclick="cp('ios')">Copy</button></div></div>
+</div>
+<div class="panel"><h2>Android Chrome intent link</h2><pre class="out" id="intent"></pre></div>
+<div class="panel"><h2>Android manifest intent-filter</h2><pre class="out" id="mf"></pre><div class="toolbar" style="margin-top:10px"><button class="btn btn-g" onclick="cp('mf')">Copy</button></div></div>
+<div class="panel"><h2>iOS Associated Domains</h2><pre class="out" id="ent"></pre></div>
+</div>
+<script>
+function $(i){return document.getElementById(i);}
+function cp(id){navigator.clipboard.writeText($(id).textContent);}
+function q(s){return "'"+s.replace(/'/g,"'\\''")+"'";}
+function run(){
+  var raw=$('uri').value.trim(),pkg=$('pkg').value.trim(),bid=$('bid').value.trim(),u;
+  ['parsed','adb','ios','intent','mf','ent'].forEach(function(i){$(i).textContent='';});
+  $('st').textContent='';$('open').removeAttribute('href');
+  if(!raw)return;
+  try{u=new URL(raw);}catch(e){$('st').textContent='✕ Not a valid URI (needs a scheme, e.g. myapp://home)';$('st').className='stat err';return;}
+  var web=u.protocol==='http:'||u.protocol==='https:';
+  var params=[];u.searchParams.forEach(function(v,k){params.push('  '+k+' = '+v);});
+  $('parsed').textContent=['scheme: '+u.protocol.replace(':',''),'host:   '+(u.host||'(none)'),'path:   '+(u.pathname||'(none)'),'query:  '+(u.search||'(none)'),'hash:   '+(u.hash||'(none)')].join('\n')+(params.length?'\nparams:\n'+params.join('\n'):'');
+  $('adb').textContent='adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d '+q(raw)+(pkg?' -p '+pkg:'');
+  $('ios').textContent='xcrun simctl openurl booted '+q(raw)+(bid?'\n# real device: open the link from Notes or Safari':'');
+  var scheme=u.protocol.replace(':','');
+  var rest=raw.replace(/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//,'');
+  $('intent').textContent='intent://'+rest+'#Intent;scheme='+scheme+';'+(pkg?'package='+pkg+';':'')+'end';
+  var pathLine=u.pathname&&u.pathname!=='/'?'\n        <data android:pathPrefix="'+u.pathname.replace(/\/$/,'')+'" />':'';
+  $('mf').textContent='<intent-filter'+(web?' android:autoVerify="true"':'')+'>\n    <action android:name="android.intent.action.VIEW" />\n    <category android:name="android.intent.category.DEFAULT" />\n    <category android:name="android.intent.category.BROWSABLE" />\n    <data android:scheme="'+scheme+'" android:host="'+(u.hostname||'')+'" />'+pathLine+'\n</intent-filter>';
+  $('ent').textContent=web?'applinks:'+u.hostname+'\n\nHost this file at:\nhttps://'+u.hostname+'/.well-known/apple-app-site-association\nhttps://'+u.hostname+'/.well-known/assetlinks.json':'Custom schemes do not use Associated Domains.\nRegister the scheme "'+scheme+'" under URL Types in Info.plist (CFBundleURLSchemes).';
+  $('open').href=raw;
+  $('st').textContent=web?'Web link: Universal/App Links apply':'Custom scheme: only works if an app registered it';$('st').className='stat';
+}
+run();
+</script>
+</body>
+</html>

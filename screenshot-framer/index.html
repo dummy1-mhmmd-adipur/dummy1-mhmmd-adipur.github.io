@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store Screenshot Framer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+label.l{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:12px 0 6px;}
+label.l:first-child{margin-top:0;}
+textarea,input[type=text],input[type=number],select{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:12.5px;outline:none;}
+textarea{min-height:140px;resize:vertical;line-height:1.55;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);}
+pre.out{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:50vh;}
+.muted{color:var(--muted);}.err{color:#fca5a5;}.ok{color:#86efac;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}#header{padding:12px 16px;flex-wrap:wrap;}.content{padding:16px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Store Screenshot Framer</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+<div class="grid2">
+  <div>
+    <div class="panel"><h2>Screenshot</h2>
+      <label class="btn btn-p" style="cursor:pointer;display:inline-block">Choose image<input type="file" accept="image/*" style="display:none" onchange="loadImg(this.files[0])"></label>
+      <span class="stat" id="fn" style="margin-left:10px">or paste / drop an image</span>
+    </div>
+    <div class="panel"><h2>Options</h2>
+      <label class="l">Output size</label>
+      <select id="size" onchange="draw()">
+        <option value="1290x2796">iPhone 6.7" (1290 x 2796)</option>
+        <option value="1242x2688">iPhone 6.5" (1242 x 2688)</option>
+        <option value="1080x1920">Google Play phone (1080 x 1920)</option>
+        <option value="1080x2400">Tall Android (1080 x 2400)</option>
+      </select>
+      <label class="l">Headline</label><input type="text" id="head" value="Your headline here" oninput="draw()">
+      <label class="l">Sub headline</label><input type="text" id="sub" value="" oninput="draw()">
+      <div class="grid2">
+        <div><label class="l">Background from</label><input type="color" id="c1" value="#4f46e5" oninput="draw()" style="height:40px;padding:2px"></div>
+        <div><label class="l">Background to</label><input type="color" id="c2" value="#06b6d4" oninput="draw()" style="height:40px;padding:2px"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="l">Text color</label><input type="color" id="tc" value="#ffffff" oninput="draw()" style="height:40px;padding:2px"></div>
+        <div><label class="l">Frame color</label><input type="color" id="fc" value="#111113" oninput="draw()" style="height:40px;padding:2px"></div>
+      </div>
+      <div class="toolbar" style="margin-top:14px"><button class="btn btn-g" onclick="dl()">Download PNG</button></div>
+    </div>
+  </div>
+  <div class="panel" style="text-align:center"><h2>Preview</h2><canvas id="cv" style="max-width:100%;max-height:78vh;border-radius:12px;border:1px solid var(--border)"></canvas></div>
+</div>
+</div>
+<script>
+var img=null;
+function $(i){return document.getElementById(i);}
+function loadImg(f){if(!f)return;var i=new Image();i.onload=function(){img=i;$('fn').textContent=f.name+' ('+i.width+'x'+i.height+')';draw();};i.src=URL.createObjectURL(f);}
+document.addEventListener('paste',function(e){var it=(e.clipboardData||{}).items||[];for(var k=0;k<it.length;k++){if(it[k].type.indexOf('image')===0){loadImg(it[k].getAsFile());break;}}});
+document.addEventListener('dragover',function(e){e.preventDefault();});
+document.addEventListener('drop',function(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f&&f.type.indexOf('image')===0)loadImg(f);});
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function wrap(c,t,maxW){var words=t.split(' '),lines=[],cur='';words.forEach(function(w){var test=cur?cur+' '+w:w;if(c.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}else cur=test;});if(cur)lines.push(cur);return lines;}
+function draw(){
+  var sz=$('size').value.split('x'),W=+sz[0],H=+sz[1],cv=$('cv'),c=cv.getContext('2d');
+  cv.width=W;cv.height=H;
+  var g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,$('c1').value);g.addColorStop(1,$('c2').value);c.fillStyle=g;c.fillRect(0,0,W,H);
+  var tc=$('tc').value,y=Math.round(H*.07);
+  c.fillStyle=tc;c.textAlign='center';c.textBaseline='top';
+  var hs=Math.round(W*.075);c.font='800 '+hs+'px "Plus Jakarta Sans",system-ui,sans-serif';
+  var hl=wrap(c,$('head').value,W*.84);hl.forEach(function(l){c.fillText(l,W/2,y);y+=hs*1.2;});
+  var sub=$('sub').value;
+  if(sub){var ss=Math.round(W*.04);c.globalAlpha=.85;c.font='500 '+ss+'px "Plus Jakarta Sans",system-ui,sans-serif';wrap(c,sub,W*.8).forEach(function(l){c.fillText(l,W/2,y+ss*.3);y+=ss*1.35;});c.globalAlpha=1;}
+  var top=y+Math.round(H*.035),bez=Math.round(W*.022),fw=Math.round(W*.78),fx=(W-fw)/2,fh=H-top+Math.round(H*.02);
+  c.save();c.shadowColor='rgba(0,0,0,.35)';c.shadowBlur=W*.04;c.shadowOffsetY=W*.015;
+  c.fillStyle=$('fc').value;rr(c,fx,top,fw,fh,W*.07);c.fill();c.restore();
+  var sx=fx+bez,sy=top+bez,sw=fw-bez*2,sh=H-sy;
+  c.save();rr(c,sx,sy,sw,sh+bez,W*.055);c.clip();
+  if(img){var s=Math.max(sw/img.width,sh/img.height);var dw=img.width*s,dh=img.height*s;c.drawImage(img,sx+(sw-dw)/2,sy,dw,dh);}
+  else{c.fillStyle='#1f1f23';c.fillRect(sx,sy,sw,sh+bez);c.fillStyle='#71717a';c.font='600 '+Math.round(W*.04)+'px system-ui,sans-serif';c.textBaseline='middle';c.fillText('Your screenshot',W/2,sy+sh/2);}
+  c.restore();
+  c.fillStyle=$('fc').value;rr(c,W/2-W*.1,top+bez*.2,W*.2,bez*1.5,bez);c.fill();
+}
+function dl(){var a=document.createElement('a');a.download='store-screenshot-'+$('size').value+'.png';a.href=$('cv').toDataURL('image/png');a.click();}
+draw();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>

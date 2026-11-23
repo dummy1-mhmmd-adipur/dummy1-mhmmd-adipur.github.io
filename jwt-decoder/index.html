@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JWT Decoder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+label.l{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:12px 0 6px;}
+label.l:first-child{margin-top:0;}
+textarea,input[type=text],input[type=number],select{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:12.5px;outline:none;}
+textarea{min-height:140px;resize:vertical;line-height:1.55;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);}
+pre.out{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:50vh;}
+.muted{color:var(--muted);}.err{color:#fca5a5;}.ok{color:#86efac;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}#header{padding:12px 16px;flex-wrap:wrap;}.content{padding:16px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>JWT Decoder</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+<div class="panel">
+  <label class="l">JWT token</label>
+  <textarea id="tok" spellcheck="false" oninput="dec()" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+  <div class="toolbar" style="margin:12px 0 0"><button class="btn" onclick="sample()">Load sample</button><button class="btn" onclick="document.getElementById('tok').value='';dec()">Clear</button><span class="stat" id="st"></span></div>
+</div>
+<div class="grid2">
+  <div class="panel"><h2>Header</h2><pre class="out" id="h"></pre></div>
+  <div class="panel"><h2>Payload</h2><pre class="out" id="p"></pre></div>
+</div>
+<div class="panel"><h2>Claims</h2><pre class="out" id="c"></pre></div>
+<div class="panel"><h2>Signature</h2><pre class="out" id="s"></pre>
+<p class="muted" style="margin-top:10px;font-size:12px">Decoding only. The signature is not verified, so never treat a decoded token as trusted. Everything runs in your browser.</p></div>
+</div>
+<script>
+function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s);var u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new TextDecoder().decode(u);}
+function esc(x){return String(x).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function fmtDate(n){var d=new Date(n*1000);return isNaN(d)?'':d.toISOString().replace('T',' ').replace('.000Z',' UTC');}
+function rel(n){var d=n*1000-Date.now(),a=Math.abs(d)/1000,u=a<60?[a,'s']:a<3600?[a/60,'min']:a<86400?[a/3600,'h']:[a/86400,'d'];var t=Math.round(u[0])+' '+u[1];return d<0?t+' ago':'in '+t;}
+function dec(){
+  var t=document.getElementById('tok').value.trim().replace(/^Bearer\s+/i,'');
+  var H=document.getElementById('h'),P=document.getElementById('p'),C=document.getElementById('c'),S=document.getElementById('s'),st=document.getElementById('st');
+  H.textContent=P.textContent=C.textContent=S.textContent='';st.textContent='';st.className='stat';
+  if(!t)return;
+  var parts=t.split('.');
+  if(parts.length!==3){st.textContent='✕ A JWT has 3 parts separated by dots (found '+parts.length+')';st.className='stat err';return;}
+  var h,p;
+  try{h=JSON.parse(b64u(parts[0]));}catch(e){st.textContent='✕ Invalid header';st.className='stat err';return;}
+  try{p=JSON.parse(b64u(parts[1]));}catch(e){H.textContent=JSON.stringify(h,null,2);st.textContent='✕ Invalid payload';st.className='stat err';return;}
+  H.textContent=JSON.stringify(h,null,2);P.textContent=JSON.stringify(p,null,2);S.textContent=parts[2]||'(empty, unsigned token)';
+  var lines=[];
+  if(h.alg)lines.push('alg: '+h.alg);
+  if(p.iss)lines.push('iss (issuer): '+p.iss);
+  if(p.sub)lines.push('sub (subject): '+p.sub);
+  if(p.aud)lines.push('aud (audience): '+JSON.stringify(p.aud));
+  [['iat','issued at'],['nbf','not before'],['exp','expires']].forEach(function(k){if(typeof p[k[0]]==='number')lines.push(k[0]+' ('+k[1]+'): '+fmtDate(p[k[0]])+'  ['+rel(p[k[0]])+']');});
+  C.textContent=lines.join('\n')||'No standard claims found.';
+  if(typeof p.exp==='number'){var ex=p.exp*1000<Date.now();st.textContent=ex?'✕ Expired':'✓ Not expired';st.className='stat '+(ex?'err':'ok');}
+  else{st.textContent='Decoded (no exp claim)';}
+  if(h.alg==='none'){st.textContent+=' · alg "none": unsigned token';}
+}
+function sample(){
+  function e(o){return btoa(JSON.stringify(o)).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');}
+  var now=Math.floor(Date.now()/1000);
+  document.getElementById('tok').value=e({alg:'HS256',typ:'JWT'})+'.'+e({sub:'1234567890',name:'Jane Doe',iat:now,exp:now+3600})+'.sample-signature';
+  dec();
+}
+</script>
+</body>
+</html>

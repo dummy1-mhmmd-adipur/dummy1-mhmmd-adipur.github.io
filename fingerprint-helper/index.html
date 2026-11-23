@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Signing Fingerprint Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--panel:#141417;--input:#000;--text:#fafafa;--muted:#a1a1aa;--border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.16);--accent:#6366f1;--accent2:#06b6d4;--green:#10b981;--red:#ef4444;--radius:16px;--radius-sm:8px;--font:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;background-image:radial-gradient(circle at 15% 0%,rgba(99,102,241,0.1),transparent 40%),radial-gradient(circle at 85% 100%,rgba(6,182,212,0.1),transparent 40%);background-attachment:fixed;}
+a{color:var(--accent2);text-decoration:none;}
+#header{display:flex;align-items:center;gap:14px;padding:16px 28px;background:rgba(9,9,11,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;flex-wrap:wrap;}
+#header h1{font-size:17px;font-weight:800;flex:1;background:linear-gradient(to right,#fff,#a5b4fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+#header .home{font-size:13px;color:var(--muted);font-weight:600;}
+.btn{font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text);transition:all .15s;}
+.btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-hi);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;}
+.btn-g{background:linear-gradient(135deg,var(--green),#059669);border:none;color:#fff;}
+.content{max-width:1200px;margin:0 auto;padding:22px 24px 70px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+label.l{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:12px 0 6px;}
+label.l:first-child{margin-top:0;}
+textarea,input[type=text],input[type=number],select{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--mono);font-size:12.5px;outline:none;}
+textarea{min-height:140px;resize:vertical;line-height:1.55;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);}
+pre.out{background:var(--input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;word-break:break-all;overflow:auto;max-height:50vh;}
+.muted{color:var(--muted);}.err{color:#fca5a5;}.ok{color:#86efac;}
+.stat{font-size:12px;color:var(--muted);font-family:var(--mono);}
+@media(max-width:800px){.grid2{grid-template-columns:1fr;}#header{padding:12px 16px;flex-wrap:wrap;}.content{padding:16px 14px 50px;}}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>App Signing Fingerprint Helper</h1>
+  <a class="home" href="../">← All apps</a>
+</div>
+<div class="content">
+<div class="panel"><h2>1. Get the fingerprint from a certificate</h2>
+  <p class="muted" style="font-size:13px;margin-bottom:10px">Upload or paste a .crt / .cer / .pem certificate. The SHA-256 and SHA-1 fingerprints are computed in your browser.</p>
+  <div class="toolbar"><label class="btn btn-p" style="cursor:pointer">Choose certificate<input type="file" id="cf" accept=".crt,.cer,.pem,.der" style="display:none" onchange="readCert(this.files[0])"></label></div>
+  <textarea id="pem" spellcheck="false" oninput="fromPem()" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+  <label class="l">SHA-256</label><input type="text" id="s256" readonly>
+  <label class="l">SHA-1</label><input type="text" id="s1" readonly>
+</div>
+<div class="panel"><h2>2. Normalize an existing fingerprint</h2>
+  <label class="l">Paste a fingerprint (any format)</label>
+  <input type="text" id="raw" oninput="norm()" placeholder="AA:BB:CC... or aabbcc... or with spaces">
+  <label class="l">Colon-separated uppercase (assetlinks.json)</label><input type="text" id="n1" readonly>
+  <label class="l">Plain hex lowercase</label><input type="text" id="n2" readonly>
+  <span class="stat" id="nst"></span>
+</div>
+<div class="panel"><h2>3. Generate assetlinks.json</h2>
+  <label class="l">Package name</label><input type="text" id="pkg" placeholder="com.example.app" oninput="gen()">
+  <label class="l">SHA-256 fingerprints (one per line, uses the ones above if empty)</label>
+  <textarea id="fps" spellcheck="false" oninput="gen()" style="min-height:70px"></textarea>
+  <label class="l">Result: host at /.well-known/assetlinks.json</label>
+  <pre class="out" id="al"></pre>
+  <div class="toolbar" style="margin-top:10px"><button class="btn btn-g" onclick="cp('al')">Copy JSON</button></div>
+</div>
+<div class="panel"><h2>keytool commands</h2>
+  <label class="l">Keystore path</label><input type="text" id="ks" value="my-release-key.jks" oninput="cmds()">
+  <label class="l">Alias</label><input type="text" id="al2" value="my-alias" oninput="cmds()">
+  <pre class="out" id="kt" style="margin-top:12px"></pre>
+</div>
+</div>
+<script>
+function $(i){return document.getElementById(i);}
+function hexOf(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return (b<16?'0':'')+b.toString(16);}).join('');}
+function colon(h){return h.toUpperCase().match(/.{2}/g).join(':');}
+function readCert(f){if(!f)return;var r=new FileReader();r.onload=function(){var u=new Uint8Array(r.result);var txt=new TextDecoder().decode(u);
+  if(txt.indexOf('BEGIN CERTIFICATE')>=0){$('pem').value=txt;fromPem();}else{digest(u);}};r.readAsArrayBuffer(f);}
+function fromPem(){
+  var t=$('pem').value;var m=t.replace(/-----[^-]+-----/g,'').replace(/\s+/g,'');
+  if(!m){$('s256').value=$('s1').value='';return;}
+  try{var b=atob(m),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);digest(u);}
+  catch(e){$('s256').value='Invalid PEM';$('s1').value='';}
+}
+function digest(u){
+  crypto.subtle.digest('SHA-256',u).then(function(d){$('s256').value=colon(hexOf(d));gen();});
+  crypto.subtle.digest('SHA-1',u).then(function(d){$('s1').value=colon(hexOf(d));});
+}
+function norm(){
+  var v=$('raw').value.replace(/[^0-9a-fA-F]/g,'');
+  if(!v){$('n1').value=$('n2').value='';$('nst').textContent='';return;}
+  var kind=v.length===64?'SHA-256':v.length===40?'SHA-1':v.length===32?'MD5':'';
+  $('n1').value=v.length%2?'':colon(v);$('n2').value=v.toLowerCase();
+  $('nst').textContent=kind?('Detected '+kind):('Unusual length: '+v.length+' hex characters');
+  $('nst').className='stat '+(kind==='SHA-256'?'ok':'');
+  if(kind==='SHA-256'&&!$('fps').value){$('fps').placeholder=colon(v);}
+}
+function gen(){
+  var pkg=$('pkg').value.trim()||'com.example.app';
+  var list=$('fps').value.split(/\n+/).map(function(x){return x.replace(/[^0-9a-fA-F]/g,'');}).filter(function(x){return x.length===64;}).map(colon);
+  if(!list.length&&$('s256').value&&$('s256').value.length===95)list=[$('s256').value];
+  if(!list.length&&$('n1').value.length===95)list=[$('n1').value];
+  var o=[{relation:['delegate_permission/common.handle_all_urls'],target:{namespace:'android_app',package_name:pkg,sha256_cert_fingerprints:list.length?list:['AA:BB:...']}}];
+  $('al').textContent=JSON.stringify(o,null,2);
+}
+function cmds(){
+  var ks=$('ks').value||'my-release-key.jks',al=$('al2').value||'my-alias';
+  $('kt').textContent='# Fingerprints of a keystore\nkeytool -list -v -keystore '+ks+' -alias '+al+'\n\n# Debug keystore (macOS / Linux)\nkeytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android\n\n# Create a new release keystore\nkeytool -genkeypair -v -keystore '+ks+' -alias '+al+' -keyalg RSA -keysize 2048 -validity 10000\n\n# Gradle (Android project)\n./gradlew signingReport';
+}
+function cp(id){navigator.clipboard.writeText($(id).textContent);}
+gen();cmds();
+</script>
+</body>
+</html>

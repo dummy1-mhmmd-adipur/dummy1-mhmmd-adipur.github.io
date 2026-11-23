@@ -57,6 +57,32 @@ A browser-based save editor for **TCG Card Shop Simulator** (PC & Nintendo Switc
 
 ---
 
+## More web apps
+
+All run 100% in the browser. Dashboard categories: Save Editors, Dev Tools, Design, Mobile Dev, Community, Resources.
+
+| App | Path | What it does |
+|---|---|---|
+| Universal Save Editor | `/universal-save-editor/` | Edit JSON, gzip, Base64, XML and text saves in a visual tree |
+| Moonlight Peaks Save Editor | `/moonlight-peaks/` | Switch/PC save editor by [Sonalpt](https://github.com/Sonalpt/Moonlight-Peaks-save-editor) (MIT, vendored with attribution, see `NOTICE.md`) |
+| Hex Viewer | `/hex-viewer/` | Byte-level file viewer with offset jump and text/hex search |
+| JSON Formatter, Viewer & Compare | `/json-formatter/` | Beautify, minify, tree view and path-by-path JSON compare |
+| Text Diff Checker | `/diff-checker/` | Line diff with ignore-whitespace/case options |
+| JWT Decoder | `/jwt-decoder/` | Decode header, payload and expiry (no signature verification) |
+| Base64 / Hex / gzip | `/encoder/` | Encode and decode converter |
+| QR Code Generator | `/qr-generator/` | PNG / SVG output |
+| Color Picker & Palette | `/color-palette/` | Shades, tints, harmonies, pick from image |
+| Certificate to JSON Bytes | `/cert-to-json/` | For mobile SSL pinning |
+| Universal Link Tester | `/link-tester/` | Validate apple-app-site-association and assetlinks.json |
+| Deep Link Command Builder | `/deeplink-tester/` | adb / xcrun commands, intent-filter, Associated Domains |
+| App Signing Fingerprint Helper | `/fingerprint-helper/` | Certificate fingerprints, assetlinks.json, keytool commands |
+| Icon & Splash Preview | `/icon-preview/` | App icon shapes and splash preview |
+| Store Screenshot Framer | `/screenshot-framer/` | Phone frame + headline, exports store-sized PNG |
+
+**Community / Resources** are external link cards only (no third-party code is copied, except the MIT-licensed Moonlight Peaks web editor above). Third-party editors are not affiliated with this site or Nintendo; back up saves with JKSV first.
+
+---
+
 ## Mobile app links
 
 Each folder under `/mobile/<app>/` is a small redirect page that detects the
